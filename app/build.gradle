@@ -1,0 +1,83 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'kotlin-parcelize'
+}
+
+android {
+    compileSdk 32
+
+    defaultConfig {
+        applicationId "com.example.githubfavourits"
+        minSdk 21
+        targetSdk 32
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.7.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.google.android.datatransport:transport-runtime:3.1.8'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
+    implementation 'androidx.games:games-activity:1.2.2'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+    //omega base
+    implementation 'com.github.Omega-R.OmegaBase:core:1.4.3'
+
+    //moxy omega
+    implementation 'com.github.Omega-R.OmegaMoxy:moxy:62e5a9f'
+    kapt 'com.github.Omega-R.OmegaMoxy:moxy-compiler:62e5a9f'
+    implementation 'com.github.Omega-R.OmegaMoxy:moxy-androidx:62e5a9f'
+    implementation 'com.github.Omega-R.OmegaMoxy:moxy-ktx:62e5a9f'
+    implementation 'com.github.Omega-R:OmegaExtensions:1.0.5'
+
+    //omega bind
+    implementation 'com.github.Omega-R:OmegaBind:1.0.4'
+
+    // omega launcher
+    implementation 'com.github.Omega-R:OmegaLaunchers:1.0.3'
+
+    //ROOM
+    implementation "androidx.room:room-runtime:2.4.3"
+    kapt "androidx.room:room-compiler:2.4.3"
+    implementation "androidx.room:room-ktx:2.4.3"
+    implementation "androidx.room:room-paging:2.4.3"
+
+    // Paging 3.0
+    implementation 'androidx.paging:paging-compose:1.0.0-alpha17'
+
+    //coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+//    implementation "androidx.room:room-coroutines:2.1.0-alpha04}"
+
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.1"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1"
+}
