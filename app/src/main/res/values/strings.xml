@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GitHubFavourits</string>
+    <string name="title_github">GitHub</string>
+    <string name="message_repository_name">Repository Name</string>
 </resources>

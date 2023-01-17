@@ -18,5 +18,6 @@ abstract class BaseActivity : OmegaActivity, BaseView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        window.setBackgroundDrawable(ColorDrawable(R.attr.activityBackground))
+//        URL-адрес для всех API: https://api.github.com/search
     }
 }

@@ -1,4 +1,4 @@
 package com.example.githubfavourits
 
-class App {
-}
+//class App {
+//}
