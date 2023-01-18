@@ -1,4 +1,4 @@
-package com.example.githubfavourits.ui.search
+package com.example.domain.objects.repository
 
 data class RepositoriesObject (
 

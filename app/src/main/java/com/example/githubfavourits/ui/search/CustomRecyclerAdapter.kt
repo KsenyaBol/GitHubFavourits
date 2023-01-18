@@ -5,20 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import androidx.sqlite.db.SimpleSQLiteQuery.bind
+import com.example.domain.objects.repository.Repositories
 import com.example.githubfavourits.R
-import com.omega_r.libs.extensions.view.getCompatDrawable
 
-class CustomRecyclerAdapter (private var repositories: List<RepositoriesObject>): RecyclerView.Adapter<CustomRecyclerAdapter.MyViewHolder>() {
+class CustomRecyclerAdapter (private var repositories: ArrayList<Repositories>):
+    RecyclerView.Adapter<CustomRecyclerAdapter.MyViewHolder>() {
 
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         val repositoryNameText: TextView = itemView.findViewById(R.id.repository_name)
-//        val favouriteImage = getCompatDrawable(R.drawable.ic_favourite)
-//        val notFavouriteImage = getCompatDrawable(R.drawable.ic_favourite_border)
         val favouriteImage: ImageButton = itemView.findViewById(R.id.favourite_image)
 
     }
@@ -34,14 +31,10 @@ class CustomRecyclerAdapter (private var repositories: List<RepositoriesObject>)
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.repositoryNameText.text = repositories[position].name
-
-        holder.favouriteImage.setOnClickListener {
-            if (!repositories[position].favourite) {
-                holder.favouriteImage.isSelected
-            } else {
-                !holder.favouriteImage.isSelected
-            }
-        }
+        holder.favouriteImage.isSelected = repositories[position].favourite
+//        holder.favouriteImage.setOnClickListener {
+//            repositories[position].favourite = !repositories[position].favourite
+//        }
 
     }
 

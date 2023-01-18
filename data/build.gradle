@@ -34,8 +34,10 @@ android {
 
 dependencies {
 
+    implementation project(path: ':domain')
+
     implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'androidx.appcompat:appcompat:1.6.0'
     implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.android.datatransport:transport-runtime:3.1.8'
@@ -61,10 +63,10 @@ dependencies {
     implementation 'com.github.Omega-R:OmegaLaunchers:1.0.3'
 
     //ROOM
-    implementation "androidx.room:room-runtime:2.4.3"
-    kapt "androidx.room:room-compiler:2.4.3"
-    implementation "androidx.room:room-ktx:2.4.3"
-    implementation "androidx.room:room-paging:2.4.3"
+    implementation "androidx.room:room-runtime:2.5.0"
+    kapt "androidx.room:room-compiler:2.5.0"
+    implementation "androidx.room:room-ktx:2.5.0"
+    implementation "androidx.room:room-paging:2.5.0"
 
     // Paging 3.0
     implementation 'androidx.paging:paging-compose:1.0.0-alpha17'
