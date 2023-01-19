@@ -7,10 +7,11 @@
     tools:context=".ui.search.SearchActivity"
     tools:ignore="MissingConstraints, HardcodedText, ExtraText">
 
-    <SearchView
+    <EditText
         android:id="@+id/search_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:inputType="textPersonName"
         android:iconifiedByDefault="false"
         android:searchIcon="@drawable/ic_search"
         android:title="search"

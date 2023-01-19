@@ -10,8 +10,8 @@ class UsersRepositories(private val gitHubApi: GitHubApi): OmegaRemoteSource() {
         private const val REQUEST_FIELDS = "id,repos,name"
     }
 
-    override suspend fun getUserInfo(name: String): ResponseUser {
-        return gitHubApi.getUserData(name, REQUEST_FIELDS)
-    }
+//    override suspend fun getUserInfo(name: String): ResponseUser {
+//        return gitHubApi.getUserData(name, REQUEST_FIELDS)
+//    }
 
 }
