@@ -5,8 +5,8 @@ import java.io.Serializable
 
 interface User: Serializable {
 
-    var id: String
-    var repos: List<Repositories>
+    var id: Int
     var name: String?
+    var fullName: String
 
 }

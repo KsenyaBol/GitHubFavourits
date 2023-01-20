@@ -6,9 +6,17 @@ import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.omegar.libs.omegalaunchers.createActivityLauncher
 import com.omegar.mvp.ktx.providePresenter
 
 class StatisticActivity: BaseActivity(R.layout.activity_statistic), StatisticView, OnChartValueSelectedListener {
+
+
+    companion object{
+
+
+        fun createLauncher() = createActivityLauncher()
+    }
 
     override val presenter: StatisticPresenter by providePresenter()
 

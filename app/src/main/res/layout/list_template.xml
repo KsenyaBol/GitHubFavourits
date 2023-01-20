@@ -11,7 +11,7 @@
         android:id="@+id/container_for_rep"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@drawable/background_for_search"
+        android:background="@drawable/button_selector_state"
         />
 
     <TextView

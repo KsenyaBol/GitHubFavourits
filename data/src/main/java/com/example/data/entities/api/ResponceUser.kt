@@ -9,12 +9,12 @@ import com.squareup.moshi.JsonClass
 data class ResponseUser(
 
     @Json(name = "id")
-    override var id: String,
-
-    @Json(name = "repositories")
-    override var repos: List<Repositories>,
+    override var id: Int,
 
     @Json(name = "name")
-    override var name: String?
+    override var name: String?,
+
+    @Json(name = "full_name")
+    override var fullName: String,
 
     ) : User

@@ -2,64 +2,49 @@ package com.example.githubfavourits.ui.search
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.widget.EditText
+import android.widget.ImageButton
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.data.entities.api.ResponceReposytories
-import com.example.githubfavourits.App.Companion.githubApi
+import com.example.data.entities.api.ResponseUser
 import com.example.githubfavourits.R
 import com.example.githubfavourits.ui.base.BaseActivity
+import com.omegar.libs.omegalaunchers.createActivityLauncher
 import com.omegar.mvp.ktx.providePresenter
-import okhttp3.internal.notify
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 class SearchActivity : BaseActivity(R.layout.activity_search), SearchView {
 
+    companion object{
+        var userList = arrayListOf<ResponseUser>()
+        var repositoryList = arrayListOf<ResponceReposytories>()
+        val adapter = CustomRecyclerAdapter(userList, repositoryList)
+
+        fun createLauncher() = createActivityLauncher()
+    }
+
     override val presenter: SearchPresenter by providePresenter()
 
-    private var repositoriesList = arrayListOf<ResponceReposytories>()
-//    private var searchbar: SearchView by bind(R.id.search_bar)
+    private val textBar: EditText by bind(R.id.text_bar)
+    private val buttonSearch: ImageButton by bind(R.id.button_search)
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val recyclerView: RecyclerView = findViewById(R.id.search_recycler_view)!!
-
-
-        val adapter = CustomRecyclerAdapter(repositoriesList)
         val location = GridLayoutManager(this, 1, RecyclerView.VERTICAL, false)
 
         recyclerView.layoutManager = location
-
-
         recyclerView.adapter = adapter
 
-        val repos: Call<ArrayList<ResponceReposytories>> = githubApi!!.getUserData("KsenyaBol")
+        buttonSearch.setOnClickListener {
 
-        repos.enqueue(object : Callback<ArrayList<ResponceReposytories>>
-        {
+            val name: String = textBar.text.toString()
+            presenter.onButtonSearchClick(name)
 
-            override fun onResponse(call: Call<ArrayList<ResponceReposytories>>, response: Response<ArrayList<ResponceReposytories>>) {
-                if(response.isSuccessful) {
-
-                    repositoriesList = response.body()!!
-                    adapter.notifyDataSetChanged()
-                    adapter.setReposytories(repositoriesList)
-
-                } else {
-
-                    println(response.errorBody())
-
-                }
-            }
-            override fun onFailure(call: Call<ArrayList<ResponceReposytories>>, t: Throwable) {
-                t.printStackTrace()
-            }
-
-        })
+        }
 
 
     }
