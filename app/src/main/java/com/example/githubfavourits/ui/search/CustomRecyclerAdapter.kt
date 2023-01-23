@@ -11,15 +11,16 @@ import com.example.data.entities.api.ResponceReposytories
 import com.example.data.entities.api.ResponseUser
 import com.example.githubfavourits.R
 
-class CustomRecyclerAdapter (private var userInfo: ArrayList<ResponseUser>, private var reposInfo: ArrayList<ResponceReposytories>):
+
+class CustomRecyclerAdapter (private var userInfo: ArrayList<ResponseUser>, private var reposInfo: List<ResponceReposytories>):
     RecyclerView.Adapter<CustomRecyclerAdapter.MyViewHolder>() {
 
-    var searchActivity: SearchActivity = SearchActivity()
 
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         val repositoryNameText: TextView = itemView.findViewById(R.id.repository_name)
         val favouriteImage: ImageButton = itemView.findViewById(R.id.favourite_image)
+        val reposButton: ImageButton = itemView.findViewById(R.id.container_for_rep)
 
 
     }
@@ -30,23 +31,24 @@ class CustomRecyclerAdapter (private var userInfo: ArrayList<ResponseUser>, priv
             LayoutInflater.from(parent.context)
                 .inflate(R.layout.list_template, parent, false)
         return MyViewHolder(itemView)
+
     }
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
-        holder.itemView.setOnClickListener {
+        holder.reposButton.setOnClickListener {
 
-            val num = userInfo[position].fullName
-            searchActivity.presenter.onElementClick(num)
-//            clickOnElementRecycler(num)
+            holder.reposButton.isSelected = !holder.reposButton.isSelected
+
+        }
+
+        holder.favouriteImage.setOnClickListener {
+
+            holder.favouriteImage.isSelected = !holder.favouriteImage.isSelected
         }
 
         holder.repositoryNameText.text = userInfo[position].name
-//        holder.favouriteImage.isSelected = repositories[position].favourite
-//        holder.favouriteImage.setOnClickListener {
-//            repositories[position].favourite = !repositories[position].favourite
-//        }
 
     }
 
@@ -54,19 +56,15 @@ class CustomRecyclerAdapter (private var userInfo: ArrayList<ResponseUser>, priv
         return userInfo.size
     }
 
+
     @SuppressLint("NotifyDataSetChanged")
-    fun setReposytories(userInfo: ArrayList<ResponseUser>) {
+    fun setRepositories(userInfo: ArrayList<ResponseUser>) {
         this.userInfo.clear()
         this.userInfo.addAll(userInfo)
         notifyDataSetChanged()
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun getRepositories(repositoryInfo: ArrayList<ResponceReposytories>) {
-        this.reposInfo.clear()
-        this.reposInfo.addAll(repositoryInfo)
-        notifyDataSetChanged()
+
     }
 
 
-}

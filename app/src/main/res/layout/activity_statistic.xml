@@ -6,24 +6,90 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:ignore="MissingConstraints">
 
+    <View
+        android:id="@+id/header_github_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.1"
+        android:background="@color/dark_greyish_blue"/>
+
+    <ImageView
+        android:id="@+id/ic_github"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_github"
+        android:layout_margin="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/header_github_logo"
+        android:contentDescription="icon github" />
+
+    <TextView
+        style="@style/Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_github"
+        android:layout_marginHorizontal="12dp"
+        app:layout_constraintStart_toEndOf="@+id/ic_github"
+        app:layout_constraintTop_toTopOf="@+id/ic_github"
+        app:layout_constraintBottom_toBottomOf="@+id/ic_github"/>
+
 <com.github.mikephil.charting.charts.LineChart
     android:id="@+id/chart"
     android:layout_width="match_parent"
     android:layout_height="0dp"
     app:layout_constraintHeight_percent="0.5"
     android:background="@color/gray"
-    android:layout_marginBottom="50dp"
+    android:layout_marginBottom="80dp"
     android:layout_marginHorizontal="8dp"
     app:layout_constraintBottom_toBottomOf="parent"/>
 
     <TextView
         style="@style/Text.Big"
+        android:id="@+id/time_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Days"
+        android:text="12d 11m 2022 "
         android:layout_margin="8dp"
         app:layout_constraintStart_toStartOf="@id/chart"
         app:layout_constraintEnd_toEndOf="@id/chart"
         app:layout_constraintBottom_toTopOf="@id/chart"/>
+    
+    <Button
+        style="@style/Text.Small"
+        android:id="@+id/button_day"
+        android:layout_width="70dp"
+        android:layout_height="60dp"
+        android:background="@drawable/button_state"
+        android:text="Day"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toStartOf="@id/button_month"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chart"/>
+
+    <Button
+        style="@style/Text.Small"
+        android:id="@+id/button_month"
+        android:layout_width="70dp"
+        android:layout_height="60dp"
+        android:background="@drawable/button_state"
+        android:text="Mon"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chart"/>
+
+    <Button
+        style="@style/Text.Small"
+        android:id="@+id/button_year"
+        android:layout_width="70dp"
+        android:layout_height="60dp"
+        android:background="@drawable/button_state"
+        android:text="Year"
+        android:textAllCaps="false"
+        app:layout_constraintStart_toEndOf="@id/button_month"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chart"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

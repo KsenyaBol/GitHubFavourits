@@ -19,9 +19,10 @@ interface GitHubApi {
         @Path("user") nameUser: String
     ): Call<ArrayList<ResponseUser>>
 
-    @GET("repos/{full_name_repository}")
+    @GET("repos/{user}/{repository}")
     fun getReposData (
-        @Path("full_name_repository") fullName: String
+        @Path("user") userName: String,
+        @Path("repository") userRepository: String
     ): Call<ArrayList<ResponceReposytories>>
 
 }

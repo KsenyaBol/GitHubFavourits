@@ -12,9 +12,9 @@ data class ResponseUser(
     override var id: Int,
 
     @Json(name = "name")
-    override var name: String?,
+    override var name: String,
 
-    @Json(name = "full_name")
-    override var fullName: String,
+    @Json(name = "login")
+    override var login: String,
 
     ) : User

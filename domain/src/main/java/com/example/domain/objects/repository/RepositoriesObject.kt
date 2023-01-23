@@ -6,5 +6,6 @@ data class RepositoriesObject (
     override var name: String,
     override var start: String,
     override var favouriteCount: Int,
+    override var fullName: String,
 
     ): Repositories

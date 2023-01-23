@@ -6,7 +6,7 @@ import java.io.Serializable
 interface User: Serializable {
 
     var id: Int
-    var name: String?
-    var fullName: String
+    var name: String
+    var login: String
 
 }

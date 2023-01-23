@@ -21,6 +21,6 @@ data class ResponceReposytories (
     override var start: String,
 
     @Json(name = "stargazers_count")
-    override var favouriteCount: Int
+    override var favouriteCount: Int,
 
     ): Repositories

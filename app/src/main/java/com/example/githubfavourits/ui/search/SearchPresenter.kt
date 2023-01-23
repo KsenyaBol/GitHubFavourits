@@ -3,43 +3,41 @@ package com.example.githubfavourits.ui.search
 import android.annotation.SuppressLint
 import com.example.data.entities.api.ResponceReposytories
 import com.example.data.entities.api.ResponseUser
-import com.example.githubfavourits.App
 import com.example.githubfavourits.App.Companion.githubApi
-import com.example.githubfavourits.ui.search.SearchActivity.Companion.adapter
-import com.example.githubfavourits.ui.search.SearchActivity.Companion.repositoryList
-import com.example.githubfavourits.ui.search.SearchActivity.Companion.userList
 import com.omega_r.base.mvp.presenters.OmegaPresenter
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class SearchPresenter(): OmegaPresenter<SearchView>() {
 
-    fun onButtonSearchClick(name: String) {
+    fun onSearch(repoName: String, userList: ArrayList<ResponseUser>, adapter: CustomRecyclerAdapter) {
 
-        val repos = githubApi!!.getUserData(name)
+//        item.name
+//        launch{
+//            val repos = githubApi!!.getUserData(item.login)
+//        }
+
+        var user = userList
+
+        val repos = githubApi!!.getUserData(repoName)
 
         repos.enqueue(object : Callback<ArrayList<ResponseUser>>
         {
-            @SuppressLint("NotifyDataSetChanged")
+
             override fun onResponse(call: Call<ArrayList<ResponseUser>>, response: Response<ArrayList<ResponseUser>>) {
-                if(response.isSuccessful) {
 
-                    userList = response.body()!!
-                    adapter.setReposytories(userList)
-
+                if (response.isSuccessful) {
+                    user = (response.body())!!
+                    adapter.setRepositories(user)
                 } else {
-
                     println(response.errorBody())
-
                 }
-
             }
 
             override fun onFailure(call: Call<ArrayList<ResponseUser>>, t: Throwable) {
-
                 t.printStackTrace()
-
             }
 
         })
@@ -47,39 +45,5 @@ class SearchPresenter(): OmegaPresenter<SearchView>() {
 
     }
 
-    fun onElementClick(fullName: String) {
-
-        val reposName = githubApi!!.getReposData(fullName)
-
-        reposName.enqueue(object : Callback<ArrayList<ResponceReposytories>>
-        {
-            @SuppressLint("NotifyDataSetChanged")
-            override fun onResponse(call: Call<ArrayList<ResponceReposytories>>, response: Response<ArrayList<ResponceReposytories>>) {
-                if(response.isSuccessful) {
-
-                    repositoryList = response.body()!!
-                    adapter.getRepositories(repositoryList)
-
-                } else {
-
-                    println(response.errorBody())
-
-                }
-
-            }
-
-            override fun onFailure(call: Call<ArrayList<ResponceReposytories>>, t: Throwable) {
-
-                t.printStackTrace()
-
-            }
-
-        })
-
-//        var userInfo = userList.forEach { reposytory ->
-//            reposytory.id = id
-//        }
-
-    }
 
 }

@@ -5,10 +5,13 @@
       <map>
         <entry key="..\:/Users/Omega/AndroidStudioProjects/GitHubFavourits/app/src/main/res/drawable/background_for_search.xml" value="0.1885" />
         <entry key="..\:/Users/Omega/AndroidStudioProjects/GitHubFavourits/app/src/main/res/drawable/bc_focus_state.xml" value="0.256" />
+        <entry key="..\:/Users/Omega/AndroidStudioProjects/GitHubFavourits/app/src/main/res/drawable/button_circle.xml" value="0.256" />
+        <entry key="..\:/Users/Omega/AndroidStudioProjects/GitHubFavourits/app/src/main/res/drawable/button_circle_focus.xml" value="0.256" />
         <entry key="..\:/Users/Omega/AndroidStudioProjects/GitHubFavourits/app/src/main/res/drawable/button_selector_state.xml" value="0.256" />
+        <entry key="..\:/Users/Omega/AndroidStudioProjects/GitHubFavourits/app/src/main/res/drawable/button_state.xml" value="0.256" />
         <entry key="..\:/Users/Omega/AndroidStudioProjects/GitHubFavourits/app/src/main/res/drawable/favourite_state.xml" value="0.248" />
         <entry key="..\:/Users/Omega/AndroidStudioProjects/GitHubFavourits/app/src/main/res/layout/activity_search.xml" value="0.33" />
-        <entry key="..\:/Users/Omega/AndroidStudioProjects/GitHubFavourits/app/src/main/res/layout/activity_statistic.xml" value="0.25" />
+        <entry key="..\:/Users/Omega/AndroidStudioProjects/GitHubFavourits/app/src/main/res/layout/activity_statistic.xml" value="0.33" />
         <entry key="..\:/Users/Omega/AndroidStudioProjects/GitHubFavourits/app/src/main/res/layout/list_template.xml" value="0.25" />
       </map>
     </option>
