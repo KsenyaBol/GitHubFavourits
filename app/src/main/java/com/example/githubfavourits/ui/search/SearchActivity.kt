@@ -2,20 +2,13 @@ package com.example.githubfavourits.ui.search
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.View
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
-import com.example.data.entities.api.ResponceReposytories
-import com.example.data.entities.api.ResponseUser
-import com.example.domain.objects.user.UserName
+import com.example.data.entities.api.ResponceRepositories
+import com.example.domain.entity.Repositories
 import com.example.githubfavourits.R
 import com.example.githubfavourits.ui.base.BaseActivity
-import com.omega_r.adapters.OmegaAdapter
 import com.omega_r.bind.adapters.OmegaAutoAdapter
-import com.omega_r.bind.model.BindModel
 import com.omega_r.bind.model.binders.bindCustom
 import com.omega_r.bind.model.binders.bindString
 import com.omegar.libs.omegalaunchers.createActivityLauncher
@@ -31,45 +24,56 @@ class SearchActivity : BaseActivity(R.layout.activity_search), SearchView {
 
     override val presenter: SearchPresenter by providePresenter()
 
-    private var userList = arrayListOf<ResponseUser>()
-    private var repositoryList = arrayListOf<ResponceReposytories>()
-    private var adapter = CustomRecyclerAdapter(userList, repositoryList)
-
-//    private val adapter = OmegaAutoAdapter.create(R.layout.list_template, {repos ->
-//        presenter.onSearch(repos)
-//    })
+    private val adapter = OmegaAutoAdapter.create(R.layout.list_template, callback = { repos: Repositories ->
+// click
+    }) {
+        bindString(R.id.repository_name_text, ResponceRepositories::reposName)
+        bindCustom(R.id.favourite_image) { imageFavourite: ImageButton, _: Repositories -> // bindClick
+            setImageFavouriteState(imageFavourite)
+        }
+        bindCustom(R.id.container_for_repos){ reposButton: ImageButton, _: Repositories ->
+            setReposButtonState(reposButton)
+        }
+    }
+    private val recyclerView: RecyclerView by bind(R.id.search_recycler_view, adapter)
 
     private val textBar: EditText by bind(R.id.text_bar)
-    private val buttonSearch: ImageButton by bind(R.id.button_search)
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val recyclerView: RecyclerView by bind(R.id.search_recycler_view) // bind
-
         recyclerView.adapter = adapter
 
-        buttonSearch.setOnClickListener {
-
+        setClickListener(R.id.button_search) {
             val name: String = textBar.text.toString()
-            presenter.onSearch(name, userList, adapter)
-
+            presenter.onButtonSearchClicked(name)
         }
 
-//        buttonRepos.setOnClickListener {
-//
-//        }
-//
-//        if (click_flg) {
-////            presenter.onElementClick(userName, reposName)
-//            val text = userName
-//            val duration = Toast.LENGTH_SHORT
-//            Toast.makeText(applicationContext, text, duration).show()
-//            !click_flg
-//        }
 
+    }
 
+    override fun setRepository(repositories: List<Repositories>) { // setRepoList
+        initRecyclerView(repositories)
+    }
+
+    private fun initRecyclerView(repositories: List<Repositories>) {
+        adapter.list = repositories
+        recyclerView.adapter = adapter
+
+    }
+
+    private fun setImageFavouriteState(imageFavourite: ImageButton) {
+        imageFavourite.setOnClickListener {
+            imageFavourite.isSelected = !imageFavourite.isSelected
+        }
+
+    }
+
+    private fun setReposButtonState(reposButton: ImageButton) {
+        reposButton.setOnClickListener {
+            Toast.makeText(applicationContext,"will be added", Toast.LENGTH_SHORT).show()
+        }
     }
 
 

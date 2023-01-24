@@ -1,6 +1,6 @@
-package com.example.domain.objects.repository
+package com.example.domain.entity
 
-interface Repositories {
+interface RepositoryFavourite {
 
     var id: Int
     var name: String

@@ -1,12 +1,9 @@
 package com.example.data.entities.api
 
-import com.example.domain.objects.repository.Repositories
-import com.example.domain.objects.repository.RepositoriesObject
+import com.example.domain.entity.RepositoryFavourite
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
 
-@JsonClass(generateAdapter = true)
-data class ResponceReposytories (
+data class ResponceReposytoryFavourite (
 
     @Json(name = "id")
     override var id: Int,
@@ -23,4 +20,4 @@ data class ResponceReposytories (
     @Json(name = "stargazers_count")
     override var favouriteCount: Int,
 
-    ): Repositories
+    ): RepositoryFavourite

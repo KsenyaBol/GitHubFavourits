@@ -3,7 +3,6 @@ package com.example.githubfavourits.ui.statistic
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import com.example.data.entities.api.ResponceReposytories
 import com.example.domain.objects.entity.Entity
 import com.example.githubfavourits.R
 import com.example.githubfavourits.ui.base.BaseActivity

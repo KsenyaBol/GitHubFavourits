@@ -1,8 +1,6 @@
 package com.example.data.api
 
-import com.example.data.entities.api.ResponceReposytories
-import com.example.data.entities.api.ResponseUser
-import retrofit2.Call
+import com.example.data.entities.api.ResponceRepositories
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -15,14 +13,14 @@ interface GitHubApi {
 //        ): ArrayList<ResponceReposytories>
 
     @GET("users/{user}/repos")
-    fun getUserData (
+    suspend fun getRepositoriesData (
         @Path("user") nameUser: String
-    ): Call<ArrayList<ResponseUser>>
+    ): List<ResponceRepositories>
 
-    @GET("repos/{user}/{repository}")
-    fun getReposData (
-        @Path("user") userName: String,
-        @Path("repository") userRepository: String
-    ): Call<ArrayList<ResponceReposytories>>
+//    @GET("repos/{user}/{repository}")
+//    fun getReposData (
+//        @Path("user") userName: String,
+//        @Path("repository") userRepository: String
+//    ): Call<ArrayList<ResponceReposytories>>
 
 }
