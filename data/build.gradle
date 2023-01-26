@@ -49,6 +49,7 @@ dependencies {
 
     //omega base
     implementation 'com.github.Omega-R.OmegaBase:core:1.4.3'
+    kapt 'com.github.Omega-R.OmegaBase:processor:1.4.3'
 
     //moxy omega
     implementation 'com.github.Omega-R.OmegaMoxy:moxy:62e5a9f'
@@ -92,4 +93,8 @@ dependencies {
     kapt "com.squareup.moshi:moshi-kotlin-codegen:1.14.0"
     implementation "com.squareup.moshi:moshi-adapters:1.14.0"
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.10")
+
+    //Omega type
+    implementation 'com.github.Omega-R.OmegaTypes:omegatypes:2.1.0'
+
 }

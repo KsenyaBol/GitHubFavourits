@@ -1,6 +1,6 @@
 package com.example.githubfavourits.ui.statistic
 
-import com.omega_r.base.mvp.presenters.OmegaPresenter
+import com.example.githubfavourits.ui.base.BasePresenter
 
-class StatisticPresenter: OmegaPresenter<StatisticView>() {
+class StatisticPresenter: BasePresenter<StatisticView>() {
 }
