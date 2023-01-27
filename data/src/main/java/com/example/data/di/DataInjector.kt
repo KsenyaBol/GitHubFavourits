@@ -2,9 +2,12 @@ package com.example.data.di
 
 import com.example.data.AppErrorHandler
 import com.example.data.repository.DataRepoOmegaRepository
+import com.example.data.repository.DataStarredAtOmegaRepository
 import com.example.data.source.RemoteRepoSource
+import com.example.data.source.RemoteStarredSource
 import com.example.domain.di.Injector
 import com.example.domain.repository.RepoRepository
+import com.example.domain.repository.StarredAtRepository
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
@@ -36,5 +39,6 @@ abstract class DataInjector: Injector {
     override val repoRepository: RepoRepository =
         DataRepoOmegaRepository(errorHandler = errorHandler, RemoteRepoSource(retrofit.create()))
 
-
+    override val starredAtRepository: StarredAtRepository =
+        DataStarredAtOmegaRepository(errorHandler = errorHandler, RemoteStarredSource(retrofit.create()))
 }

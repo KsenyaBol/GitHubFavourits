@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
-import com.example.data.entities.api.RepoBody
 import com.example.domain.entity.Repo
 import com.example.githubfavourits.R
 import com.example.githubfavourits.ui.base.BaseActivity
@@ -24,7 +23,7 @@ class SearchActivity : BaseActivity(R.layout.activity_search), SearchView {
     private val adapter = OmegaAutoAdapter.create(R.layout.list_template, callback = { repos: Repo ->
         presenter.onReposButtonClicked(repos)
     }) {
-        bindString(R.id.repository_name_text, RepoBody::reposName)
+        bindString(R.id.repository_name_text, Repo::name)
     }
 
     private val recyclerView: RecyclerView by bind(R.id.search_recycler_view, adapter)
