@@ -6,6 +6,9 @@ import com.squareup.moshi.Json
 data class RemoteStarredBody (
 
     @Json(name = "starred_at")
-    override val favouriteAt: String
+    override val favouriteAt: String,
+
+    @Json(name = "user")
+    override val user: UserData
 
 ) : StarredRepository

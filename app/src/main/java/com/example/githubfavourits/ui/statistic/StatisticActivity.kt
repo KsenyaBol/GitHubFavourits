@@ -8,6 +8,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import com.example.domain.entity.Repo
 import com.example.domain.entity.StarredRepository
+import com.example.domain.entity.User
 import com.example.githubfavourits.R
 import com.example.githubfavourits.ui.base.BaseActivity
 import com.github.mikephil.charting.charts.BarChart
@@ -24,9 +25,13 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.omegar.libs.omegalaunchers.createActivityLauncher
 import com.omegar.libs.omegalaunchers.tools.put
 import com.omegar.mvp.ktx.providePresenter
+import java.text.DateFormat
+import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
 import java.util.*
 
 class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticView,
@@ -67,7 +72,6 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
 //    private val starredList = arrayListOf<StarredRepository>()
 
     private val timeText: TextView by bind(R.id.textview_time)
-    private val timeDayText: TextView by bind(R.id.textview_time_day)
     private val dayButton: Button by bind(R.id.button_day)
     private val monthButton: Button by bind(R.id.button_month)
     private val yearButton: Button by bind(R.id.button_year)
@@ -82,7 +86,7 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
     private var nowData = Calendar.getInstance()
 
     @SuppressLint("SimpleDateFormat")
-    private var dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM-yyyy")
+    private var dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MMMM-yyyy")
 
 
     private val barchart: BarChart by bind(R.id.barchart) {
@@ -171,18 +175,16 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         )
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val startDate = LocalDate.now().minusDays(7)
-        val endDate = Calendar.DAY_OF_MONTH
-        val nowMonth = Calendar.MONTH
-        val nowYear = Calendar.YEAR
+//
+//        val date = Calendar.getInstance()
+//        val dateStr = "$date"
+//        val formatter = SimpleDateFormat("dd MMMM yyyy", Locale.ENGLISH)
+//
+//        timeText.text = formatter.format(Calendar.getInstance())
 
-
-        timeDayText.text = "$startDate - $endDate"
-//        timeText.text = "$nowMonth $nowYear"
-//            LocalDate.parse("$nowData", dateFormat).toString()
 
         presenter.getStarredDataList()
 

@@ -48,23 +48,11 @@
         android:id="@+id/textview_time"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="00m 0000"
+        android:text="00d 00m 0000"
+        android:gravity="center"
         android:layout_margin="8dp"
-        app:layout_constraintBottom_toTopOf="@id/barchart"
+        app:layout_constraintStart_toStartOf="@id/barchart"
         app:layout_constraintEnd_toEndOf="@id/barchart"
-        app:layout_constraintStart_toEndOf="@id/textview_time_day" />
-
-    <TextView
-        style="@style/Text.Big"
-        android:id="@+id/textview_time_day"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="00d"
-        android:gravity="end"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintWidth_percent="0.42"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/textview_time"
         app:layout_constraintBottom_toTopOf="@id/barchart" />
 
     <ImageButton
