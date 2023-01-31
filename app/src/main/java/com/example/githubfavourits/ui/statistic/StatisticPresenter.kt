@@ -18,5 +18,8 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo): 
 
     }
 
+    fun show() {
+        showComingSoon()
+    }
 
 }
