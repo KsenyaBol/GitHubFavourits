@@ -6,7 +6,6 @@ import com.github.mikephil.charting.charts.BarChart
 
 interface StatisticView: BaseView {
 
-var starredList: List<StarredRepository>
-
+    var starredList: List<StarredRepository>
 
 }

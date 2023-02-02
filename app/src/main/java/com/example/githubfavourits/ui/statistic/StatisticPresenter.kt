@@ -13,13 +13,11 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo): 
             viewState.starredList = starredAtList
 
             Log.d("starredAtList", starredAtList.toString())
+
         }
 
 
     }
 
-    fun show() {
-        showComingSoon()
-    }
 
 }

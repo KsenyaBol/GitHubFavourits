@@ -3,6 +3,7 @@ package com.example.githubfavourits.ui.statistic
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
@@ -24,6 +25,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.omega_r.libs.extensions.date.getDateMonth
 import com.omega_r.libs.extensions.date.getDateYear
+import com.omega_r.libs.extensions.string.toDate
 import com.omegar.libs.omegalaunchers.createActivityLauncher
 import com.omegar.libs.omegalaunchers.tools.put
 import com.omegar.mvp.ktx.providePresenter
@@ -39,34 +41,7 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
 
         private const val EXTRA_NAME_USER = "nameUser"
         private const val EXTRA_REPO = "repo"
-        private var direction = Entity.DAY
-
-        private val weekMap =
-            mapOf(
-                Calendar.MONDAY to 0,
-                Calendar.TUESDAY to 1,
-                Calendar.WEDNESDAY to 2,
-                Calendar.THURSDAY to 3,
-                Calendar.FRIDAY to 4,
-                Calendar.SATURDAY to 5,
-                Calendar.SUNDAY to 6
-            )
-
-        private val monthMap =
-            mapOf(
-                Calendar.JANUARY to 0,
-                Calendar.FEBRUARY to 1,
-                Calendar.MARCH to 2,
-                Calendar.APRIL to 3,
-                Calendar.MAY to 4,
-                Calendar.JUNE to 5,
-                Calendar.JULY to 6,
-                Calendar.AUGUST to 7,
-                Calendar.SEPTEMBER to 8,
-                Calendar.OCTOBER to 9,
-                Calendar.NOVEMBER to 10,
-                Calendar.DECEMBER to 11
-            )
+        private var direction = Entity.WEEK
 
         fun createLauncher(nameUser: String, repo: Repo) = createActivityLauncher(
             EXTRA_NAME_USER put nameUser,
@@ -74,11 +49,11 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         )
     }
 
-    enum class Entity {
-        DAY, MONTH, YEAR
+    enum class Entity(range: IntRange) {
+        WEEK(0..6), MONTH(0..3), YEAR(0..11)
     }
 
-    override val presenter: StatisticPresenter by providePresenter{
+    override val presenter: StatisticPresenter by providePresenter {
         StatisticPresenter(this[EXTRA_NAME_USER]!!, this[EXTRA_REPO]!!)
     }
 
@@ -90,72 +65,64 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
     private val nextImageButton: ImageButton by bind(R.id.imagebutton_next)
 
     override var starredList: List<StarredRepository> = listOf()
-    private var index: Int = 0
-    private var barArrayList =  arrayListOf<BarEntry>()
+        set(value) {
+            field = value
+            //starList = value
+        }
+
+//    private var starList: List<StarredRepository> = listOf()
+    private var barArrayList = arrayListOf<BarEntry>()
     private val allDateBarList = arrayListOf<Date>()
-    private val dayBarList = arrayListOf<Date>()
+    private val weekBarList = arrayListOf<Date>()
     private val monthBarList = arrayListOf<Date>()
     private var yearBarList = arrayListOf<Date>()
     private var nowDate = Calendar.getInstance()
-    private var monthDate = nowDate.get(Calendar.MONTH)
-    private var yearDate = nowDate.get(Calendar.YEAR)
-    private var dayDate = nowDate.get(Calendar.DAY_OF_MONTH)
     private val currentDate = Date()
     private val dateFormat: DateFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
     private val dateText: String = dateFormat.format(currentDate)
-    var quarters =  arrayOf("Mn", "Tu", "Wn", "Th", "Fr", "St", "Sn")
+    var quarters = arrayOf("Mn", "Tu", "Wn", "Th", "Fr", "St", "Sn")
 
     private val barchart: BarChart by bind(R.id.barchart) {
         setOnChartValueSelectedListener(this@StatisticActivity)
 
-        getBarChartData()
-
-        val quartersDay = arrayOf("Mn", "Tu", "Wn", "Th", "Fr", "St", "Sn")
-        val quartersMonth = arrayOf("1st", "2nd", "3d", "4th")
-        val quartersYear = arrayOf("Jn", "F", "Mr", "Ap", "My", "Jn", "Jl", "Au", "S", "O", "N", "D")
 
         val xFormatter: ValueFormatter = object : ValueFormatter() {
+            @SuppressLint("SimpleDateFormat")
             override fun getFormattedValue(value: Float): String {
-                if (direction == Entity.DAY) {
 
-                    nowDate.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
-                    nowDate.add(Calendar.DAY_OF_MONTH, value.toInt())
-                    val week = nowDate.get(Calendar.DAY_OF_WEEK)
-                    val indexLocal = weekMap[week]!!
-                    index = indexLocal
-                    quarters = quartersDay
+                if (direction == Entity.WEEK) {
+                    quarters = arrayOf("Mn", "Tu", "Wn", "Th", "Fr", "St", "Sn")
                 }
-               if (direction == Entity.MONTH) {
-
-                   nowDate.set(Calendar.WEEK_OF_MONTH, Calendar.WEEK_OF_MONTH)
-                   nowDate.add(Calendar.WEEK_OF_MONTH, value.toInt())
-                   val month = nowDate.get(Calendar.WEEK_OF_MONTH)
-                   val indexLocal = weekMap[month]!!
-                   index = indexLocal
-                   quarters = quartersMonth
-               }
-
+                if (direction == Entity.MONTH) {
+                    quarters = arrayOf("1st", "2nd", "3d", "4th")
+                }
                 if (direction == Entity.YEAR) {
-
-                    nowDate.set(Calendar.MONTH, Calendar.JANUARY)
-                    nowDate.add(Calendar.MONTH, value.toInt())
-                    val year = nowDate.get(Calendar.MONTH)
-                    val indexLocal = monthMap[year]!!
-                    index = indexLocal
-                    quarters = quartersYear
+                    quarters = arrayOf("J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D")
                 }
 
-                return quarters[index]
+                return quarters.getOrNull(value.toInt()) ?: value.toString()
             }
         }
 
         val yFormatter: ValueFormatter = object : ValueFormatter() {
             override fun getFormattedValue(value: Float): String {
-                val count = value.toInt()
+
+                var count = 0
+
+                if (direction == Entity.WEEK) {
+                    count = weekBarList.size
+                }
+                if (direction == Entity.MONTH) {
+                    count = monthBarList.size
+                }
+                if (direction == Entity.YEAR) {
+                    count = yearBarList.size
+                }
+
                 return "$count"
             }
         }
-
+        getBarChartData()
         val barDataSet = BarDataSet(barArrayList, "")
         val barData = BarData(barDataSet)
 
@@ -167,7 +134,7 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         barchart.data = barData
         barchart.setGridBackgroundColor(R.color.transparent)
         barchart.setTouchEnabled(true)
-
+        barchart.animateY(1000)
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.setDrawAxisLine(false)
         xAxis.setDrawGridLines(false)
@@ -178,6 +145,7 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         YAxis.YAxisLabelPosition.INSIDE_CHART
 
         axisRight.isEnabled = false
+
         axisLeft.isEnabled = false
         axisLeft.setDrawAxisLine(false)
         axisLeft.setDrawGridLines(false)
@@ -196,36 +164,104 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
     }
 
     fun getBarChartData() {
+
+        val calendar: Calendar = GregorianCalendar()
+        calendar.clear()
+        calendar[Calendar.YEAR] = Calendar.YEAR
+        calendar[Calendar.WEEK_OF_YEAR] = Calendar.WEEK_OF_YEAR
+        val weekStart = calendar.time
+        calendar.add(Calendar.DAY_OF_YEAR, 6)
+        val weekEnd = calendar.time
+        val period: ClosedRange<Date> = (weekStart..weekEnd)
+
+        val format = SimpleDateFormat("EEEE dd MMMM yyyy")
+
+        starredList.forEach { starred ->
+            val starredAtDate: Date = starred.favouriteAt.toDate(format)!!
+            allDateBarList.add(starredAtDate)
+            Log.d("allDateList", allDateBarList.toString())
+        }
+
+//        Log.d("starList", starList.toString())
+
+        allDateBarList.forEach { date ->
+            if (date.getDateYear() == Calendar.YEAR) yearBarList.add(date)
+            Log.d("yearList", yearBarList.toString())
+        }
+        yearBarList.forEach { date ->
+            if (date.getDateMonth() == Calendar.MONTH) monthBarList.add(date)
+        }
+        monthBarList.forEach { date ->
+            if (date in period) weekBarList.add(date)
+            Log.d("weekList", weekBarList.toString())
+        }
+
+
+//        if (direction == Entity.WEEK) {
+//            barArrayList = arrayListOf(
+//                BarEntry(0f,2f),
+//                BarEntry(1f,4f),
+//                BarEntry(2f,5f),
+//                BarEntry(3f,3f),
+//                BarEntry(4f,2f),
+//                BarEntry(5f,6f),
+//                BarEntry(6f,4f),
+//            )
+//        }
         barArrayList = arrayListOf(
-            BarEntry(0f,2f),
-            BarEntry(1f,4f),
-            BarEntry(2f,5f),
-            BarEntry(3f,3f),
-            BarEntry(4f,2f),
-            BarEntry(5f,6f),
-            BarEntry(6f,4f),
+            BarEntry(0f, 2f),
+            BarEntry(1f, 4f),
+            BarEntry(2f, 5f),
+            BarEntry(3f, 3f),
+            BarEntry(4f, 2f),
+            BarEntry(5f, 6f),
+            BarEntry(6f, 4f),
         )
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    fun converter() {
+
+//        val newFormat = format.format(starredList)
+//        allDateBarList.add(newFormat)
     }
 
     @SuppressLint("SetTextI18n", "SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        starredList.forEach { starred ->
-            val dateStar = dateFormat.parse(starred.favouriteAt)
-            allDateBarList.add(dateStar!!)
-        }
-        allDateBarList.forEach { date ->
-            if (date.getDateYear() == yearDate) yearBarList.add(date)
-        }
-        yearBarList.forEach { date ->
-            if (date.getDateMonth() == monthDate) monthBarList.add(date)
-        }
-        monthBarList.forEach{ date ->
-            if (date.day == dayDate && date.day == dayDate - 1 && date.day == dayDate - 2 && date.day == dayDate - 3
-                && date.day == dayDate - 4 && date.day == dayDate - 5 && date.day == dayDate - 6)
-                dayBarList.add(date)
-        }
+//        val calendar: Calendar = GregorianCalendar()
+//        calendar.clear()
+//        calendar[Calendar.YEAR] = Calendar.YEAR
+//        calendar[Calendar.WEEK_OF_YEAR] = Calendar.WEEK_OF_YEAR
+//        val weekStart = calendar.time
+//        calendar.add(Calendar.DAY_OF_YEAR, 6)
+//        val weekEnd = calendar.time
+//        val period: ClosedRange<Date> = (weekStart..weekEnd)
+//
+//        val format = SimpleDateFormat("EEEE dd MMMM yyyy")
+//
+//
+//
+//        starredList.forEach { starred ->
+//            val starredAtDate: Date = starred.favouriteAt.toDate(format)!!
+//            allDateBarList.add(starredAtDate)
+//            Log.d("allDateList", allDateBarList.toString())
+//        }
+//
+////        Log.d("starList", starList.toString())
+//
+//        allDateBarList.forEach { date ->
+//            if (date.getDateYear() == Calendar.YEAR) yearBarList.add(date)
+//            Log.d("yearList", yearBarList.toString())
+//        }
+//        yearBarList.forEach { date ->
+//            if (date.getDateMonth() == Calendar.MONTH) monthBarList.add(date)
+//        }
+//        monthBarList.forEach { date ->
+//            if (date in period) weekBarList.add(date)
+//            Log.d("weekList", weekBarList.toString())
+//        }
 //        dayBarList.sort()
 
         timeText.text = dateText
@@ -233,7 +269,7 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         presenter.getStarredDataList()
 
         dayButton.setOnClickListener {
-            direction = Entity.DAY
+            direction = Entity.WEEK
             barchart.invalidate()
         }
 

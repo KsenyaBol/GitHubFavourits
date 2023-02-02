@@ -7,7 +7,7 @@ import com.example.domain.entity.Repo
 import com.example.domain.entity.StarredRepository
 import com.omega_r.base.data.sources.OmegaRemoteSource
 
-class RemoteRepoSource(private val gitHubApi: GitHubApi): OmegaRemoteSource(), DataRepoSource, DataStarredAtSource {
+class RemoteRepoSource(private val gitHubApi: GitHubApi): OmegaRemoteSource(), DataRepoSource {
 
     override suspend fun getRepoList(userName: String): List<Repo> {
         return gitHubApi.getRepositoriesData(userName)
