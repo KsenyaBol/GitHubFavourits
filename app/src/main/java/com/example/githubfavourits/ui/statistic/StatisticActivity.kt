@@ -8,8 +8,13 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.constraintlayout.widget.Group
+import com.example.data.entities.RepoDateStatistic
+import com.example.data.entities.StarredData
+import com.example.domain.entity.DateStatistic
 import com.example.domain.entity.Repo
-import com.example.domain.entity.StarredRepository
+import com.example.domain.entity.StarredRepoData
+import com.example.domain.entity.User
 import com.example.githubfavourits.R
 import com.example.githubfavourits.ui.base.BaseActivity
 import com.github.mikephil.charting.charts.BarChart
@@ -25,7 +30,6 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.omega_r.libs.extensions.date.getDateMonth
 import com.omega_r.libs.extensions.date.getDateYear
-import com.omega_r.libs.extensions.string.toDate
 import com.omegar.libs.omegalaunchers.createActivityLauncher
 import com.omegar.libs.omegalaunchers.tools.put
 import com.omegar.mvp.ktx.providePresenter
@@ -49,8 +53,8 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         )
     }
 
-    enum class Entity(range: IntRange) {
-        WEEK(0..6), MONTH(0..3), YEAR(0..11)
+    enum class Entity(quantityValue: Int) {
+        WEEK(7), MONTH(4), YEAR(12)
     }
 
     override val presenter: StatisticPresenter by providePresenter {
@@ -64,27 +68,25 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
     private val backImageButton: ImageButton by bind(R.id.imagebutton_back)
     private val nextImageButton: ImageButton by bind(R.id.imagebutton_next)
 
-    override var starredList: List<StarredRepository> = listOf()
+    override var allDateBarList = arrayListOf<StarredRepoData>()
         set(value) {
             field = value
-            //starList = value
+            getBarChartData()
         }
-
-//    private var starList: List<StarredRepository> = listOf()
+    private var structureDateList = arrayListOf<DateStatistic>()
     private var barArrayList = arrayListOf<BarEntry>()
-    private val allDateBarList = arrayListOf<Date>()
-    private val weekBarList = arrayListOf<Date>()
-    private val monthBarList = arrayListOf<Date>()
-    private var yearBarList = arrayListOf<Date>()
-    private var nowDate = Calendar.getInstance()
+    private val weekBarList = arrayListOf<StarredRepoData>()
+    private val monthBarList = arrayListOf<StarredRepoData>()
+    private var yearBarList = arrayListOf<StarredRepoData>()
     private val currentDate = Date()
     private val dateFormat: DateFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
     private val dateText: String = dateFormat.format(currentDate)
     var quarters = arrayOf("Mn", "Tu", "Wn", "Th", "Fr", "St", "Sn")
+    val year: Int = 2021
+    val month = Calendar.MONTH
 
     private val barchart: BarChart by bind(R.id.barchart) {
         setOnChartValueSelectedListener(this@StatisticActivity)
-
 
         val xFormatter: ValueFormatter = object : ValueFormatter() {
             @SuppressLint("SimpleDateFormat")
@@ -117,12 +119,17 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
                 }
                 if (direction == Entity.YEAR) {
                     count = yearBarList.size
+
+                    yearBarList.forEach { date ->
+
+                    }
                 }
 
                 return "$count"
             }
         }
         getBarChartData()
+
         val barDataSet = BarDataSet(barArrayList, "")
         val barData = BarData(barDataSet)
 
@@ -163,7 +170,10 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         invalidate()
     }
 
-    fun getBarChartData() {
+    @SuppressLint("SimpleDateFormat")
+    private fun getBarChartData() {
+
+        Log.d("ListSize", allDateBarList.size.toString())
 
         val calendar: Calendar = GregorianCalendar()
         calendar.clear()
@@ -174,95 +184,97 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         val weekEnd = calendar.time
         val period: ClosedRange<Date> = (weekStart..weekEnd)
 
-        val format = SimpleDateFormat("EEEE dd MMMM yyyy")
+        for (month in 0..11) {
+            val list = arrayListOf<User>()
+            allDateBarList.forEach { date ->
+                if (date.favouriteAt.getDateYear() == year) {
+                    if (date.favouriteAt.month == month) list.add(date.user)
+                }
+                structureDateList.add(RepoDateStatistic(date.favouriteAt.month, list))
 
-        starredList.forEach { starred ->
-            val starredAtDate: Date = starred.favouriteAt.toDate(format)!!
-            allDateBarList.add(starredAtDate)
-            Log.d("allDateList", allDateBarList.toString())
+            }
         }
 
-//        Log.d("starList", starList.toString())
+
+
+        Log.d("structureDateList", structureDateList.toString())
 
         allDateBarList.forEach { date ->
-            if (date.getDateYear() == Calendar.YEAR) yearBarList.add(date)
+            if (date.favouriteAt.getDateYear() == year) yearBarList.add(date)
             Log.d("yearList", yearBarList.toString())
         }
-        yearBarList.forEach { date ->
-            if (date.getDateMonth() == Calendar.MONTH) monthBarList.add(date)
+        allDateBarList.forEach { date ->
+            if (date.favouriteAt.getDateYear() == year && date.favouriteAt.getDateMonth() == month)
+                monthBarList.add(date)
         }
-        monthBarList.forEach { date ->
-            if (date in period) weekBarList.add(date)
+        allDateBarList.forEach { date ->
+            if (date.favouriteAt.getDateYear() == year && date.favouriteAt.getDateMonth() == month &&
+                date.favouriteAt in period
+            ) weekBarList.add(date)
             Log.d("weekList", weekBarList.toString())
         }
 
+        if (direction == Entity.WEEK) {
 
-//        if (direction == Entity.WEEK) {
-//            barArrayList = arrayListOf(
-//                BarEntry(0f,2f),
-//                BarEntry(1f,4f),
-//                BarEntry(2f,5f),
-//                BarEntry(3f,3f),
-//                BarEntry(4f,2f),
-//                BarEntry(5f,6f),
-//                BarEntry(6f,4f),
-//            )
-//        }
-        barArrayList = arrayListOf(
-            BarEntry(0f, 2f),
-            BarEntry(1f, 4f),
-            BarEntry(2f, 5f),
-            BarEntry(3f, 3f),
-            BarEntry(4f, 2f),
-            BarEntry(5f, 6f),
-            BarEntry(6f, 4f),
-        )
-    }
+            barArrayList = arrayListOf(
+                BarEntry(0f, 2f),
+                BarEntry(1f, 4f),
+                BarEntry(2f, 5f),
+                BarEntry(3f, 3f),
+                BarEntry(4f, 2f),
+                BarEntry(5f, 6f),
+                BarEntry(6f, 4f),
+            )
+            barchart.invalidate()
+        }
 
-    @SuppressLint("SimpleDateFormat")
-    fun converter() {
+        if (direction == Entity.MONTH) {
 
-//        val newFormat = format.format(starredList)
-//        allDateBarList.add(newFormat)
+            barArrayList = arrayListOf(
+                BarEntry(0f, 2f),
+                BarEntry(1f, 4f),
+                BarEntry(2f, 5f),
+                BarEntry(3f, 3f),
+            )
+            barchart.invalidate()
+        }
+
+        if (direction == Entity.YEAR) {
+
+//            var list: List<Float> = listOf()
+//            structureDateList.forEach { date ->
+//                if(date.favouriteAt) == month) {
+//
+//                }
+//            }
+
+            structureDateList.forEach { date ->
+                (date.favouriteAt == month)
+            }
+
+            barArrayList = arrayListOf(
+                BarEntry(0f, 2f),
+                BarEntry(1f, 4f),
+                BarEntry(2f, 5f),
+                BarEntry(3f, 3f),
+                BarEntry(4f, 2f),
+                BarEntry(5f, 6f),
+                BarEntry(6f, 4f),
+                BarEntry(7f, 5f),
+                BarEntry(8f, 8f),
+                BarEntry(9f, 1f),
+                BarEntry(10f, 3f),
+                BarEntry(11f, 5f),
+            )
+            barchart.invalidate()
+        }
+
+
     }
 
     @SuppressLint("SetTextI18n", "SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-//        val calendar: Calendar = GregorianCalendar()
-//        calendar.clear()
-//        calendar[Calendar.YEAR] = Calendar.YEAR
-//        calendar[Calendar.WEEK_OF_YEAR] = Calendar.WEEK_OF_YEAR
-//        val weekStart = calendar.time
-//        calendar.add(Calendar.DAY_OF_YEAR, 6)
-//        val weekEnd = calendar.time
-//        val period: ClosedRange<Date> = (weekStart..weekEnd)
-//
-//        val format = SimpleDateFormat("EEEE dd MMMM yyyy")
-//
-//
-//
-//        starredList.forEach { starred ->
-//            val starredAtDate: Date = starred.favouriteAt.toDate(format)!!
-//            allDateBarList.add(starredAtDate)
-//            Log.d("allDateList", allDateBarList.toString())
-//        }
-//
-////        Log.d("starList", starList.toString())
-//
-//        allDateBarList.forEach { date ->
-//            if (date.getDateYear() == Calendar.YEAR) yearBarList.add(date)
-//            Log.d("yearList", yearBarList.toString())
-//        }
-//        yearBarList.forEach { date ->
-//            if (date.getDateMonth() == Calendar.MONTH) monthBarList.add(date)
-//        }
-//        monthBarList.forEach { date ->
-//            if (date in period) weekBarList.add(date)
-//            Log.d("weekList", weekBarList.toString())
-//        }
-//        dayBarList.sort()
 
         timeText.text = dateText
 
@@ -271,17 +283,20 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         dayButton.setOnClickListener {
             direction = Entity.WEEK
             barchart.invalidate()
+            getBarChartData()
         }
 
         monthButton.setOnClickListener {
             direction = Entity.MONTH
             barchart.invalidate()
+            getBarChartData()
 
         }
 
         yearButton.setOnClickListener {
             direction = Entity.YEAR
             barchart.invalidate()
+            getBarChartData()
 
         }
 
@@ -297,3 +312,15 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
 
 
 }
+
+//allDateBarList.forEach { date ->
+//    if (date.favouriteAt.getDateYear() == year) {
+//        for (month in 0..11) {
+//            val list = arrayListOf<User>()
+//            if (date.favouriteAt.getDateMonth() == month) {
+//                list.add(date.user)
+//            }
+//            structureDateList.add(RepoDateStatistic(month, list))
+//        }
+//    }
+//}

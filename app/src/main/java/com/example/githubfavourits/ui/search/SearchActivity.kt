@@ -1,7 +1,10 @@
 package com.example.githubfavourits.ui.search
 
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.View
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.domain.entity.Repo
@@ -39,6 +42,23 @@ class SearchActivity : BaseActivity(R.layout.activity_search), SearchView {
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        userNameEditText.setOnKeyListener(object : View.OnKeyListener {
+            override fun onKey(v: View?, keyCode: Int, event: KeyEvent): Boolean {
+                if (event.action == KeyEvent.ACTION_DOWN &&
+                    keyCode == KeyEvent.KEYCODE_ENTER
+                ) {
+                    val name: String = userNameEditText.text.toString()
+                    presenter.onButtonSearchClicked(name)
+
+                    userNameEditText.clearFocus()
+                    userNameEditText.isCursorVisible = false
+
+                    return true
+                }
+                return false
+            }
+        })
 
         setClickListener(R.id.button_search) {
             val name: String = userNameEditText.text.toString()

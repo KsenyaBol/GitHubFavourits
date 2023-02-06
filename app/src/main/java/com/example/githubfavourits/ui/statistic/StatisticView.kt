@@ -1,11 +1,12 @@
 package com.example.githubfavourits.ui.statistic
 
+import com.example.domain.entity.StarredRepoData
 import com.example.domain.entity.StarredRepository
 import com.example.githubfavourits.ui.base.BaseView
-import com.github.mikephil.charting.charts.BarChart
+import kotlin.collections.ArrayList
 
 interface StatisticView: BaseView {
 
-    var starredList: List<StarredRepository>
+    var allDateBarList: ArrayList<StarredRepoData>
 
 }
