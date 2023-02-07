@@ -7,6 +7,6 @@ import kotlin.collections.ArrayList
 
 interface StatisticView: BaseView {
 
-    var allDateBarList: ArrayList<StarredRepoData>
+    var allDateBarList: ArrayList<StarredRepoData>?
 
 }
