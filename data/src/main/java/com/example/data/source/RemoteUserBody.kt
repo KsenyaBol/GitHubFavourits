@@ -1,9 +1,9 @@
-package com.example.data.entities
+package com.example.data.source
 
 import com.example.domain.entity.User
 import com.squareup.moshi.Json
 
-data class UserData(
+data class RemoteUserBody(
 
     @Json(name = "login")
     override val login: String,

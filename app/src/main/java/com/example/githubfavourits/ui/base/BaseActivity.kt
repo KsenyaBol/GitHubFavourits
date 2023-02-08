@@ -16,6 +16,7 @@ abstract class BaseActivity : OmegaActivity, BaseView {
 
     abstract override val presenter: OmegaPresenter<out BaseView>
 
+    // TODO clean
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        window.setBackgroundDrawable(ColorDrawable(R.attr.activityBackground))

@@ -1,20 +1,25 @@
 package com.example.data.di
 
-import com.example.data.AppErrorHandler
+import android.annotation.SuppressLint
+import com.example.data.entities.StarredData
 import com.example.data.repository.DataRepoOmegaRepository
-import com.example.data.repository.DataStarredAtOmegaRepository
 import com.example.data.source.RemoteRepoSource
-import com.example.data.source.RemoteStarredSource
 import com.example.domain.di.Injector
 import com.example.domain.repository.RepoRepository
-import com.example.domain.repository.StarredAtRepository
+import com.omega_r.base.errors.ErrorHandler
+import com.squareup.moshi.FromJson
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.ToJson
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 abstract class DataInjector: Injector {
 
@@ -24,11 +29,29 @@ abstract class DataInjector: Injector {
         .addNetworkInterceptor(loggingInterceptor)
         .build()
 
-    private val moshi = Moshi.Builder()
-        .add(KotlinJsonAdapterFactory())
-        .build()
+    val customDateAdapter: Any = object : Any() {
+        @SuppressLint("SimpleDateFormat")
+        var dateFormat =  SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 
-    private val errorHandler = AppErrorHandler(moshi)
+        @ToJson
+        @Synchronized
+        fun dateToJson(d: Date?): String? {
+            return dateFormat.format(d)
+        }
+
+        @FromJson
+        @Synchronized
+        @Throws(ParseException::class)
+        fun dateToJson(s: String?): Date? {
+            return dateFormat.parse(s)
+        }
+
+    }
+    private val moshi = Moshi.Builder()
+            //TODO: add data adapter
+        .add(KotlinJsonAdapterFactory())
+        .add(customDateAdapter)
+        .build()
 
     private val retrofit =  Retrofit.Builder()
         .baseUrl("https://api.github.com/")
@@ -37,8 +60,7 @@ abstract class DataInjector: Injector {
         .build()
 
     override val repoRepository: RepoRepository =
-        DataRepoOmegaRepository(errorHandler = errorHandler, RemoteRepoSource(retrofit.create()))
+        DataRepoOmegaRepository(errorHandler = ErrorHandler(), RemoteRepoSource(retrofit.create()))
 
-    override val starredAtRepository: StarredAtRepository =
-        DataStarredAtOmegaRepository(errorHandler = errorHandler, RemoteStarredSource(retrofit.create()))
+
 }

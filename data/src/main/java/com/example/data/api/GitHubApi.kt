@@ -1,13 +1,13 @@
 package com.example.data.api
 
-import com.example.data.entities.RemoteStarredBody
-import com.example.data.entities.RemoteRepoBody
+import com.example.data.source.RemoteStarredBody
+import com.example.data.source.RemoteRepoBody
 import retrofit2.http.*
 
 
 interface GitHubApi {
 
-    @GET("users/{user}/repos")
+    @GET("users/{user}/repos?per_page=100")
     suspend fun getRepositoriesData(
         @Path("user") nameUser: String
     ): List<RemoteRepoBody>

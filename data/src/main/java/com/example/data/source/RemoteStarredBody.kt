@@ -1,4 +1,4 @@
-package com.example.data.entities
+package com.example.data.source
 
 import com.example.domain.entity.StarredRepository
 import com.squareup.moshi.Json
@@ -6,9 +6,9 @@ import com.squareup.moshi.Json
 data class RemoteStarredBody (
 
     @Json(name = "starred_at")
-    override val favouriteAt: String,
+    override val starredAt: String,
 
     @Json(name = "user")
-    override val user: UserData
+    override val user: RemoteUserBody
 
 ) : StarredRepository

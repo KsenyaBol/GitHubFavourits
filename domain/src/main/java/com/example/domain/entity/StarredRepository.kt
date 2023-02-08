@@ -2,10 +2,10 @@ package com.example.domain.entity
 
 import java.io.Serializable
 
-
+//TODO del
 interface StarredRepository: Serializable {
 
-    val favouriteAt: String
+    val starredAt: String
 
     val user: User
 

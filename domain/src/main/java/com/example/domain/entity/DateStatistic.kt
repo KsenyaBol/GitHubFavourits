@@ -4,7 +4,7 @@ import java.util.*
 
 interface DateStatistic {
 
-    val favouriteAt: Int
+    val favouriteAt: Date // Date
 
     val userList: List<User>
 
