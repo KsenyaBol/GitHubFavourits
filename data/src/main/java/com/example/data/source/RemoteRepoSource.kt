@@ -2,8 +2,8 @@ package com.example.data.source
 
 import com.example.data.api.GitHubApi
 import com.example.data.repository.DataRepoSource
+import com.example.domain.entity.DateStatistic
 import com.example.domain.entity.Repo
-import com.example.domain.entity.StarredRepository
 import com.omega_r.base.data.sources.OmegaRemoteSource
 
 class RemoteRepoSource(private val gitHubApi: GitHubApi): OmegaRemoteSource(), DataRepoSource {
@@ -12,7 +12,7 @@ class RemoteRepoSource(private val gitHubApi: GitHubApi): OmegaRemoteSource(), D
         return gitHubApi.getRepositoriesData(userName)
     }
 
-    override suspend fun getStarredList(userName: String, repoName: String): List<StarredRepository> {
+    override suspend fun getStarredList(userName: String, repoName: String): List<DateStatistic> {
         return gitHubApi.getStarredAtData(userName, repoName)
     }
 

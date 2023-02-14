@@ -13,7 +13,7 @@ interface GitHubApi {
     ): List<RemoteRepoBody>
 
     @Headers( "Accept: application/vnd.github.v3.star+json")
-    @GET("repos/{user}/{repository}/stargazers")
+    @GET("repos/{user}/{repository}/stargazers?per_page=100")
     suspend fun getStarredAtData(
         @Path("user") userName: String,
         @Path("repository") repositoryName: String

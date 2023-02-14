@@ -6,7 +6,7 @@ import java.util.*
 
 data class RepoDateStatistic(
 
-    override val favouriteAt: Date,
+    override val starredAt: Date,
 
     override val userList: List<User>,
 

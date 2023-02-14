@@ -1,7 +1,6 @@
 package com.example.data.di
 
 import android.annotation.SuppressLint
-import com.example.data.entities.StarredData
 import com.example.data.repository.DataRepoOmegaRepository
 import com.example.data.source.RemoteRepoSource
 import com.example.domain.di.Injector
@@ -47,6 +46,7 @@ abstract class DataInjector: Injector {
         }
 
     }
+
     private val moshi = Moshi.Builder()
             //TODO: add data adapter
         .add(KotlinJsonAdapterFactory())

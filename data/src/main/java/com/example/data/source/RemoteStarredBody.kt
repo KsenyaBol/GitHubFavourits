@@ -1,14 +1,16 @@
 package com.example.data.source
 
-import com.example.domain.entity.StarredRepository
+import com.example.domain.entity.DateStatistic
+import com.example.domain.entity.User
 import com.squareup.moshi.Json
+import java.util.*
 
 data class RemoteStarredBody (
 
     @Json(name = "starred_at")
-    override val starredAt: String,
+    override val starredAt: Date,
 
     @Json(name = "user")
-    override val user: RemoteUserBody
+    override val userList: List<User>
 
-) : StarredRepository
+) : DateStatistic
