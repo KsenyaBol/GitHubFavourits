@@ -1,69 +1,48 @@
 package com.example.data.repository
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.util.Log
 import com.example.data.entities.RepoDateStatistic
+import com.example.data.source.RemoteStarredBody
 import com.example.domain.entity.DateStatistic
 import com.example.domain.entity.Repo
 import com.example.domain.entity.User
 import com.example.domain.repository.RepoRepository
+import com.omega_r.base.errors.ErrorHandler
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.time.DayOfWeek
-import java.time.temporal.TemporalAdjuster
-import java.time.temporal.TemporalAdjusters
 import java.util.*
 
-class RepoRepositoryImpl(override var currentDate: Date) : RepoRepository {
+class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSource) :
+    RepoRepository, DataRepoOmegaRepository(errorHandler, dataRepoSource) {
 
-    var allDateList = listOf<DateStatistic>()
-    private val allDateBarList = arrayListOf<DateStatistic>()
+    private var allDateList = listOf<RemoteStarredBody>()
     private var structureDateList = arrayListOf<DateStatistic>()
-    //    private var direction = Entity.YEAR
-    private var dateFormatForYear: DateFormat = SimpleDateFormat("yyyy", Locale.getDefault())
-    private var dateFormatForMonth: DateFormat = SimpleDateFormat("MM", Locale.getDefault())
-    private var dateFormatForDay: DateFormat = SimpleDateFormat("dd", Locale.getDefault())
-    private var year: Int = dateFormatForYear.format(currentDate).toInt()
-    private var month = dateFormatForMonth.format(currentDate).toInt()
-    private var day = dateFormatForDay.format(currentDate).toInt()
-    private var dayOfYear = 0
-    private var weekStartGlobal = "day"
-    private var weekEndGlobal = "day"
+    private var dateFormat: DateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
 
-    enum class DateValue() {
-        WEEK, MONTH, YEAR
-    }
+    override suspend fun getStatisticList(userName: String, repoName: String): List<DateStatistic> {
+        val starredList = getStarredList(userName, repoName)
+        //https://api.github.com/repos/google/github/stargazers?per_page=100
+        //stargazers_count
 
-    override suspend fun getRepoList(userName: String): List<Repo> {
-        TODO("Not yet implemented")
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    override suspend fun getStarredList(userName: String, repoName: String): List<DateStatistic> {
-        val starredAtList = getStarredList(userName, repoName)
-        allDateList = starredAtList
-
-        val adjusters: MutableMap<String, TemporalAdjuster> = HashMap()
-        val adj: TemporalAdjuster = TemporalAdjusters.firstDayOfYear()
-
-        adjusters["week"] = TemporalAdjusters.previousOrSame(DayOfWeek.of(1))
-        adjusters["month"] = TemporalAdjusters.firstDayOfMonth()
-        adjusters["year"] = TemporalAdjusters.firstDayOfYear()
-//
-//        var temporal = adj.adjustInto()
-//        temporal = temporal.with(adj)
-
-        val group = allDateList.groupBy { it.starredAt == adjusters["DateValue.WEEK"]}
-        group.values.map {  }
-
+        Log.d("starredList1", starredList.toString())
+        allDateList = starredList
 
         val list = arrayListOf<User>()
-        allDateList.forEach { date ->
-            if(dateFormatForYear.format(date.starredAt).toInt() == year) {
-                list.addAll(date.userList)
+        for (date in allDateList.indices) {
+            for (nextDate in (date + 1) until allDateList.size) {
+                    val i = dateFormat.format(allDateList[date].starredAt)
+                    val j = dateFormat.format(allDateList[nextDate].starredAt)
+
+                    if (i == j) {
+                        list.add(allDateList[date].userList)
+                    }
             }
+            structureDateList.add(RepoDateStatistic(allDateList[date].starredAt, list))
+
         }
 
-        structureDateList.add(RepoDateStatistic(starredAt = ))
+        Log.d("structureDateList", structureDateList.toString())
+        return structureDateList
     }
+
 }

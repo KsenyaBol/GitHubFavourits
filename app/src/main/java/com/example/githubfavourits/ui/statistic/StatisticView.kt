@@ -8,7 +8,7 @@ interface StatisticView: BaseView {
 
     var allDateBarList: ArrayList<DateStatistic>?
     var structureDateList: ArrayList<DateStatistic>
-    var direction: Enum<StatisticPresenter.Entity>
+    var direction: Enum<StatisticPresenter.DateValue>
     var year: Int
     var month: Int
     var day: Int

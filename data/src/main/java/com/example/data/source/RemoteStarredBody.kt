@@ -1,6 +1,7 @@
 package com.example.data.source
 
 import com.example.domain.entity.DateStatistic
+import com.example.domain.entity.RemoteDate
 import com.example.domain.entity.User
 import com.squareup.moshi.Json
 import java.util.*
@@ -8,9 +9,9 @@ import java.util.*
 data class RemoteStarredBody (
 
     @Json(name = "starred_at")
-    override val starredAt: Date,
+    val starredAt: Date,
 
     @Json(name = "user")
-    override val userList: List<User>
+    val userList: RemoteUserBody
 
-) : DateStatistic
+)

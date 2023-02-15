@@ -12,7 +12,7 @@ class RemoteRepoSource(private val gitHubApi: GitHubApi): OmegaRemoteSource(), D
         return gitHubApi.getRepositoriesData(userName)
     }
 
-    override suspend fun getStarredList(userName: String, repoName: String): List<DateStatistic> {
+    override suspend fun getStarredList(userName: String, repoName: String): List<RemoteStarredBody> {
         return gitHubApi.getStarredAtData(userName, repoName)
     }
 
