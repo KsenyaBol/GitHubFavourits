@@ -11,6 +11,10 @@ data class RemoteRepoBody(
     @Json(name = "name")
     override val name: String,
 
+    @Json (name = "stargazers_count")
+    override val stargazers: Int,
+
     @Json(ignore = true)
     override val favorite: Boolean? = null,
+
 ): Repo

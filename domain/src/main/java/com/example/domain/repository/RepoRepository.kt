@@ -9,7 +9,7 @@ interface RepoRepository {
 
     suspend fun getRepoList(userName: String): List<Repo>
 
-    suspend fun getStatisticList(userName: String, repoName: String): List<DateStatistic>
+    suspend fun getStatisticList(pageNumber: Int, userName: String, repoName: String): List<DateStatistic>
 
 
 }

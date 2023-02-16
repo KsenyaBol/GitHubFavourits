@@ -8,6 +8,6 @@ import com.omega_r.base.annotations.AppOmegaRepository
 @AppOmegaRepository
 interface DataRepoRepository: RepoRepository {
 
-    suspend fun getStarredList(userName: String, repoName: String): List<RemoteStarredBody>
+    suspend fun getStarredList(pageNumber: Int, userName: String, repoName: String): List<RemoteStarredBody>
 
 }

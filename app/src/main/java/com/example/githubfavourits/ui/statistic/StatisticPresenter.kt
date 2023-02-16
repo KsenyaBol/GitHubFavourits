@@ -17,7 +17,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class StatisticPresenter(private val nameUser: String, private val repo: Repo) : BasePresenter<StatisticView>() {
+class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
+    BasePresenter<StatisticView>() {
 
     private val allDateBarList = arrayListOf<DateStatistic>()
     private var structureDateList = arrayListOf<DateStatistic>()
@@ -32,6 +33,7 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
     private var dayOfYear = 0
     private var weekStartGlobal = "day"
     private var weekEndGlobal = "day"
+    private var indexDate = 0
 
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SimpleDateFormat")
@@ -39,7 +41,12 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
         launchWithWaiting {
 
             val nameRepo = repo.name
-            val starredAtList = repoRepository.getStatisticList(nameUser, nameRepo)
+            var pageNumber = repo.stargazers
+            if (pageNumber % 100 != 0) {
+                pageNumber = pageNumber / 100 +1
+            } else pageNumber /= 100
+
+            val starredAtList = repoRepository.getStatisticList(pageNumber, nameUser, nameRepo)
             allDateBarList.addAll(starredAtList)
 
             viewState.allDateBarList = allDateBarList
@@ -177,54 +184,58 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
 
         if (direction == DateValue.YEAR) {
 
-            for (date in allDateBarList.indices) {
-                for (month in 0..12) {
-                    val list = arrayListOf<User>()
-                    if ((allDateBarList[date].starredAt.getDateYear()) == year && allDateBarList[date].starredAt.getDateMonth() == month) {
+            for (month in 0..12) {
+                val list = arrayListOf<User>()
+                for (date in allDateBarList.indices) {
+                    if ((allDateBarList[date].starredAt.getDateYear()) == year && allDateBarList[date].starredAt.getDateMonth() ==
+                        month) {
                         list.addAll(allDateBarList[date].userList)
+                        indexDate = date
                     }
-                    structureDateList.add(RepoDateStatistic(allDateBarList[date].starredAt, list))
                 }
+                structureDateList.add(RepoDateStatistic(allDateBarList[indexDate].starredAt, list))
             }
 
         }
 
         if (direction == DateValue.MONTH) {
 
-            for (date in allDateBarList.indices) {
-                for (week in 0..4) {
-                    val list = arrayListOf<User>()
-                        if ((allDateBarList[date].starredAt.getDateYear()) == year && allDateBarList[date].starredAt.getDateMonth() == month &&
-                            (allDateBarList[date].starredAt.getDateDayOfMonth() / 7 - 1) == week) {
-                            list.addAll(allDateBarList[date].userList)
-                        }
-                    structureDateList.add(RepoDateStatistic(allDateBarList[date].starredAt, list))
+            for (week in 0..4) {
+                val list = arrayListOf<User>()
+                for (date in allDateBarList.indices) {
+                    if ((allDateBarList[date].starredAt.getDateYear()) == year && allDateBarList[date].starredAt.getDateMonth() ==
+                        month && (allDateBarList[date].starredAt.getDateDayOfMonth() / 7 - 1) == week
+                    ) {
+                        list.addAll(allDateBarList[date].userList)
+                        indexDate = date
+                    }
                 }
+                structureDateList.add(RepoDateStatistic(allDateBarList[indexDate].starredAt, list))
             }
 
         }
 
         if (direction == DateValue.WEEK) {
 
-            for (date in allDateBarList.indices) {
-                for (day in 0..6) {
-                    val list = arrayListOf<User>()
-                        if ((allDateBarList[date].starredAt.getDateYear()) == year && allDateBarList[date].starredAt.getDateMonth() == month &&
-                            allDateBarList[date].starredAt in period && allDateBarList[date].starredAt.day == day
-                        ) {
-                            list.addAll(allDateBarList[date].userList)
-                        }
-
-                    structureDateList.add(RepoDateStatistic(allDateBarList[date].starredAt, list))
+            for (day in 0..6) {
+                val list = arrayListOf<User>()
+                for (date in allDateBarList.indices) {
+                    if ((allDateBarList[date].starredAt.getDateYear()) == year && allDateBarList[date].starredAt.getDateMonth() == month &&
+                        allDateBarList[date].starredAt in period && allDateBarList[date].starredAt.day == day
+                    ) {
+                        list.addAll(allDateBarList[date].userList)
+                        indexDate = date
+                    }
                 }
+                structureDateList.add(RepoDateStatistic(allDateBarList[indexDate].starredAt, list))
             }
-
 
         }
 
         viewState.structureDateList = structureDateList
         viewState.weekStartGlobal = weekStartGlobal
         viewState.weekEndGlobal = weekEndGlobal
+
     }
 
 

@@ -8,6 +8,8 @@ interface Repo: Serializable {
 
     val name: String
 
+    val stargazers: Int
+
     val favorite: Boolean?
 
 }

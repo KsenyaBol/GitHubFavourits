@@ -117,7 +117,6 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
 
         barDataSet.valueTextColor = Color.BLACK
         barDataSet.valueTextSize = 14F
-        barDataSet.setGradientColor(R.color.gray, R.color.dark_greyish_blue)
         barDataSet.axisDependency = YAxis.AxisDependency.LEFT
 
         barchart.data = barData
@@ -128,7 +127,7 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         xAxis.setDrawAxisLine(false)
         xAxis.setDrawGridLines(false)
         xAxis.textSize = 12f
-        xAxis.textColor = (R.color.black)
+        xAxis.textColor = (R.color.dark_greyish_blue)
         xAxis.gridColor = (R.color.transparent)
 
         YAxis.YAxisLabelPosition.INSIDE_CHART
@@ -145,6 +144,7 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         barDataSet.setDrawIcons(false)
         barDataSet.isHighlightEnabled = false
         barDataSet.form = Legend.LegendForm.NONE
+        barDataSet.color = resources.getColor(R.color.dark_greyish_blue)
 
         xAxis.valueFormatter = xFormatter
         axisLeft.valueFormatter = yFormatter
@@ -167,12 +167,8 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
             when(direction) {
                 StatisticPresenter.DateValue.WEEK ->
                     barArrayList.add(BarEntry(value.starredAt.day.toFloat(), value.userList.size.toFloat()))
-                StatisticPresenter.DateValue.MONTH -> {
-//                    if (value.starredAt.getDateDayOfMonth() / 7  == 0)
-                    barArrayList.add(BarEntry(value.starredAt.getDateDayOfMonth() / 7f, value.userList.size
-                        .toFloat()))
-                }
-
+                StatisticPresenter.DateValue.MONTH ->
+                    barArrayList.add(BarEntry(value.starredAt.getDateDayOfMonth() / 7f, value.userList.size.toFloat()))
                 StatisticPresenter.DateValue.YEAR ->
                     barArrayList.add(BarEntry(value.starredAt.month.toFloat(), value.userList.size.toFloat()))
             }
@@ -180,14 +176,19 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         Log.d("barlist1", barArrayList.toString())
 
         val barDataSet = BarDataSet(barArrayList, "")
-        barchart.invalidate()
+
         barDataSet.isHighlightEnabled = false
         barDataSet.form = Legend.LegendForm.NONE
         barDataSet.valueTextColor = Color.BLACK
         barDataSet.valueTextSize = 14F
-        barDataSet.setGradientColor(R.color.gray, R.color.dark_greyish_blue)
+        barDataSet.color = resources.getColor(R.color.dark_greyish_blue)
+
         barchart.data = BarData(barDataSet)
+        barchart.isScaleXEnabled = false
+        barchart.isScaleYEnabled = false
+
         barDataSet.setDrawIcons(false)
+        barDataSet.color = resources.getColor(R.color.dark_greyish_blue)
 
         barchart.invalidate()
     }
