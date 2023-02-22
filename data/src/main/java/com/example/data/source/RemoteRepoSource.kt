@@ -8,12 +8,12 @@ import com.omega_r.base.data.sources.OmegaRemoteSource
 
 class RemoteRepoSource(private val gitHubApi: GitHubApi): OmegaRemoteSource(), DataRepoSource {
 
-    override suspend fun getRepoList(userName: String): List<Repo> {
-        return gitHubApi.getRepositoriesData(userName)
+    override suspend fun getRepoRepositoryList(userName: String, pageNumber: Int): List<Repo> {
+        return gitHubApi.getRepositoriesData(userName, pageNumber)
     }
 
-    override suspend fun getStarredList(pageNumber: Int, userName: String, repoName: String): List<RemoteStarredBody> {
-        return gitHubApi.getStarredAtData(pageNumber, userName, repoName)
+    override suspend fun getStarredList( userName: String, repoName: String, pageNumber: Int): List<RemoteStarredBody> {
+        return gitHubApi.getStarredAtData(userName, repoName, pageNumber)
     }
 
 }

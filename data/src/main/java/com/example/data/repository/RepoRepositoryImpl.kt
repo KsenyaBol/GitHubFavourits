@@ -1,6 +1,7 @@
 package com.example.data.repository
 
 import android.util.Log
+import com.example.domain.entity.RepoData
 import com.example.data.entities.RepoDateStatistic
 import com.example.data.source.RemoteStarredBody
 import com.example.domain.entity.DateStatistic
@@ -17,11 +18,24 @@ class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSou
     private var allDateList = listOf<RemoteStarredBody>()
     private var structureDateList = arrayListOf<DateStatistic>()
     private var dateFormat: DateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+    private var count = 1
+    private val allReposLoading = false
+
+    override suspend fun getRepoList(userName: String, pageNumber: Int): RepoData {
+
+        val repoList = getRepoRepositoryList(userName, pageNumber)
+
+      if (repoList.size > 100) {
+          allReposLoading
+      }
+
+        return RepoData(repoList, allReposLoading)
+    }
 
     override suspend fun getStatisticList(pageNumber: Int, userName: String, repoName: String): List<DateStatistic> {
 
-        var page = pageNumber
-        val starredList = getStarredList(page, userName, repoName)
+        val page = pageNumber
+        val starredList = getStarredList(userName, repoName, page)
         //https://api.github.com/repos/google/github/stargazers?per_page=100
         //stargazers_count
 

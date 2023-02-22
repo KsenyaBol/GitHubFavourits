@@ -1,24 +1,26 @@
 package com.example.githubfavourits.ui.search
 
 import android.annotation.SuppressLint
-import android.content.DialogInterface
 import android.os.Bundle
-import android.view.KeyEvent
-import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.*
-import androidx.recyclerview.widget.RecyclerView
+import android.widget.EditText
 import com.example.domain.entity.Repo
+import com.example.domain.entity.RepoData
 import com.example.githubfavourits.R
 import com.example.githubfavourits.ui.base.BaseActivity
 import com.omega_r.bind.adapters.OmegaAutoAdapter
 import com.omega_r.bind.model.binders.bindString
+import com.omega_r.libs.omegarecyclerview.OmegaRecyclerView
 import com.omegar.libs.omegalaunchers.createActivityLauncher
 import com.omegar.mvp.ktx.providePresenter
+
 
 class SearchActivity : BaseActivity(R.layout.activity_search), SearchView {
 
     companion object {
+
+        private const val PREVENTION_VALUE = 5
+
         fun createLauncher() = createActivityLauncher()
     }
 
@@ -30,14 +32,15 @@ class SearchActivity : BaseActivity(R.layout.activity_search), SearchView {
         bindString(R.id.repository_name_text, Repo::name)
     }
 
-    private val recyclerView: RecyclerView by bind(R.id.search_recycler_view, adapter)
+    private val recyclerView: OmegaRecyclerView by bind(R.id.search_recycler_view, adapter)
 
     private val userNameEditText: EditText by bind(R.id.edittext_user_name)
+    private val page: Int = 1
 
-    override var repoList: List<Repo> = listOf()
+    override var repoList: RepoData = RepoData(repoList = listOf(), false)
         set(value) {
             field = value
-            adapter.list = value
+            adapter.list = value.repoList
         }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -46,7 +49,7 @@ class SearchActivity : BaseActivity(R.layout.activity_search), SearchView {
 
         userNameEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    presenter.onButtonSearchClicked(userNameEditText.text.toString())
+                    presenter.onButtonSearchClicked(userNameEditText.text.toString(), recyclerView)
                     true
                 } else false
 
@@ -54,7 +57,7 @@ class SearchActivity : BaseActivity(R.layout.activity_search), SearchView {
 
         setClickListener(R.id.button_search) {
             val name: String = userNameEditText.text.toString()
-            presenter.onButtonSearchClicked(name)
+            presenter.onButtonSearchClicked(name, recyclerView)
         }
     }
 

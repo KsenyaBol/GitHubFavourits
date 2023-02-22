@@ -3,6 +3,7 @@ package com.example.githubfavourits.ui.base
 import android.os.Bundle
 import androidx.annotation.ContentView
 import androidx.annotation.LayoutRes
+import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.LineChart
 import com.omega_r.base.components.OmegaActivity
 import com.omega_r.base.mvp.presenters.OmegaPresenter
