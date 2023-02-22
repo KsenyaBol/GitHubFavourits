@@ -12,5 +12,4 @@ interface RepoRepository {
 
     suspend fun getStatisticList(pageNumber: Int, userName: String, repoName: String): List<DateStatistic>
 
-
 }

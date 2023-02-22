@@ -8,4 +8,6 @@ interface SearchView : BaseView {
 
     var repoList: RepoData
 
+    var nextQuery: Boolean
+
 }

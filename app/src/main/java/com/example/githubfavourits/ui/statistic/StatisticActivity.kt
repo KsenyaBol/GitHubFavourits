@@ -27,6 +27,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.omega_r.libs.extensions.date.getDateDayOfMonth
+import com.omega_r.libs.extensions.date.getDateMonth
 import com.omegar.libs.omegalaunchers.createActivityLauncher
 import com.omegar.libs.omegalaunchers.tools.put
 import com.omegar.mvp.ktx.providePresenter
@@ -166,11 +167,11 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         structureDateList.forEach { value ->
             when(direction) {
                 StatisticPresenter.DateValue.WEEK ->
-                    barArrayList.add(BarEntry(value.starredAt.day.toFloat(), value.userList.size.toFloat()))
+                    barArrayList.add(BarEntry(value.starredAt.getDateDayOfMonth().toFloat(), value.userList.size.toFloat()))
                 StatisticPresenter.DateValue.MONTH ->
                     barArrayList.add(BarEntry(value.starredAt.getDateDayOfMonth() / 7f, value.userList.size.toFloat()))
                 StatisticPresenter.DateValue.YEAR ->
-                    barArrayList.add(BarEntry(value.starredAt.month.toFloat(), value.userList.size.toFloat()))
+                    barArrayList.add(BarEntry(value.starredAt.getDateMonth().toFloat(), value.userList.size.toFloat()))
             }
         }
         Log.d("barlist1", barArrayList.toString())
