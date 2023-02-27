@@ -34,10 +34,12 @@ class SearchActivity : BaseActivity(R.layout.activity_search), SearchView, OnPag
             bindString(R.id.repository_name_text, Repo::name)
         }
 
-    private val recyclerView: OmegaRecyclerView by bind(R.id.search_recycler_view, adapter)
+    private val recyclerView: OmegaRecyclerView by bind(R.id.search_recycler_view) {
+        recyclerView.setPaginationCallback(this@SearchActivity)
+        adapter = this@SearchActivity.adapter
+    }
 
     private val userNameEditText: EditText by bind(R.id.edittext_user_name)
-    private var pageGlobal: Int = 1
 
     override var repoList: RepoData = RepoData(listOf(), false)
         set(value) {
@@ -45,16 +47,25 @@ class SearchActivity : BaseActivity(R.layout.activity_search), SearchView, OnPag
             adapter.list = value.repoList
         }
     override var nextQuery: Boolean = false
+        set(value) {
+            field = value
+            if (value) {
+                recyclerView.hidePagination()
+            } else {
+                recyclerView.showProgressPagination()
+            }
+        }
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        recyclerView.setPaginationCallback(this)
+        recyclerView.hidePagination()
 
         userNameEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                presenter.requestRepoList(userNameEditText.text.toString(), pageGlobal)
+                presenter.requestRepoList(userNameEditText.text.toString(), 1)
+                recyclerView.showProgressPagination()
                 true
             } else false
 
@@ -62,21 +73,12 @@ class SearchActivity : BaseActivity(R.layout.activity_search), SearchView, OnPag
 
         setClickListener(R.id.button_search) {
             val name: String = userNameEditText.text.toString()
-            presenter.requestRepoList(name, pageGlobal)
+            presenter.requestRepoList(name, 1)
+            recyclerView.showProgressPagination()
         }
     }
 
     override fun onPageRequest(page: Int) {
-
-        if (nextQuery) {
-            recyclerView.hidePagination()
-            pageGlobal += 1
-        }
-
-        if (!nextQuery) {
-            recyclerView.showProgressPagination()
-        }
-
         presenter.requestRepoList(userNameEditText.text.toString(), page)
     }
 

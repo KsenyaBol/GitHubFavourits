@@ -28,6 +28,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.omega_r.libs.extensions.date.getDateDayOfMonth
 import com.omega_r.libs.extensions.date.getDateMonth
+import com.omega_r.libs.extensions.date.getDateYear
 import com.omegar.libs.omegalaunchers.createActivityLauncher
 import com.omegar.libs.omegalaunchers.tools.put
 import com.omegar.mvp.ktx.providePresenter
@@ -73,6 +74,7 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
 
     private var barArrayList = arrayListOf<BarEntry>()
     private val currentDate = Date()
+    private var date: Date = Date()
     private var dateFormatForYear: DateFormat = SimpleDateFormat("yyyy", Locale.getDefault())
     private var dateFormatForMonth: DateFormat = SimpleDateFormat("MM", Locale.getDefault())
     private var dateFormatForDay: DateFormat = SimpleDateFormat("dd", Locale.getDefault())
@@ -164,16 +166,17 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         barchart.clear()
         barArrayList.clear()
 
-        structureDateList.forEach { value ->
+        structureDateList.forEachIndexed {index,  value ->
             when(direction) {
                 StatisticPresenter.DateValue.WEEK ->
-                    barArrayList.add(BarEntry(value.starredAt.getDateDayOfMonth().toFloat(), value.userList.size.toFloat()))
+                    barArrayList.add(BarEntry(index.toFloat(), value.userList.size.toFloat()))
                 StatisticPresenter.DateValue.MONTH ->
-                    barArrayList.add(BarEntry(value.starredAt.getDateDayOfMonth() / 7f, value.userList.size.toFloat()))
+                    barArrayList.add(BarEntry(index.toFloat(), value.userList.size.toFloat()))
                 StatisticPresenter.DateValue.YEAR ->
-                    barArrayList.add(BarEntry(value.starredAt.getDateMonth().toFloat(), value.userList.size.toFloat()))
+                    barArrayList.add(BarEntry(index.toFloat(), value.userList.size.toFloat()))
             }
         }
+
         Log.d("barlist1", barArrayList.toString())
 
         val barDataSet = BarDataSet(barArrayList, "")
@@ -183,6 +186,7 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         barDataSet.valueTextColor = Color.BLACK
         barDataSet.valueTextSize = 14F
         barDataSet.color = resources.getColor(R.color.dark_greyish_blue)
+
 
         barchart.data = BarData(barDataSet)
         barchart.isScaleXEnabled = false
@@ -228,16 +232,30 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         backImageButton.setOnClickListener {
             presenter.backImageButtonClick()
 
+            structureDateList.forEach { value ->
+                date = value.starredAt
+            }
+
             if (direction == StatisticPresenter.DateValue.YEAR) {
                 timeText.text = year.toString()
+                if (date.getDateYear() - 1 == year) {
+                    presenter.getStarredListRepeatedly()
+                }
             }
 
             if (direction == StatisticPresenter.DateValue.MONTH) {
                 timeText.text = "$month.$year"
+                if (date.getDateYear() - 1 == year && month == 0) {
+                    presenter.getStarredListRepeatedly()
+                }
             }
 
             if (direction == StatisticPresenter.DateValue.WEEK) {
                 timeText.text = "$weekStartGlobal-$weekEndGlobal.$month.$year"
+                if (date.getDateYear() - 1 == year &&
+                    weekStartGlobal.toInt() <= 7 && month == 0) {
+                    presenter.getStarredListRepeatedly()
+                }
             }
             getBarChartData()
         }

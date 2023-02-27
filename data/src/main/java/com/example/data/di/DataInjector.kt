@@ -22,7 +22,9 @@ import java.util.*
 
 abstract class DataInjector: Injector {
 
-    private val loggingInterceptor = HttpLoggingInterceptor()
+    private val loggingInterceptor = HttpLoggingInterceptor().apply {
+        setLevel(HttpLoggingInterceptor.Level.BODY)
+    }
 
     private val client = OkHttpClient.Builder()
         .addNetworkInterceptor(loggingInterceptor)

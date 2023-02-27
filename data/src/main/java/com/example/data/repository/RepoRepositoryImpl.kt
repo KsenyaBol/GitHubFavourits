@@ -18,28 +18,20 @@ class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSou
     private var allDateList = listOf<RemoteStarredBody>()
     private var structureDateList = arrayListOf<DateStatistic>()
     private var dateFormat: DateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-    private var count = 1
-    private val allReposLoading = false
+    private var pageOfYear = 2023
 
     override suspend fun getRepoList(userName: String, pageNumber: Int): RepoData {
-
         val repoList = getRepoRepositoryList(userName, pageNumber)
-
-      if (repoList.size > 100) {
-          allReposLoading
-      }
-
-        return RepoData(repoList, allReposLoading)
+        return RepoData(repoList, repoList.size < 100)
     }
 
     override suspend fun getStatisticList(pageNumber: Int, userName: String, repoName: String): List<DateStatistic> {
 
-        val page = pageNumber
-        val starredList = getStarredList(userName, repoName, page)
-        //https://api.github.com/repos/google/github/stargazers?per_page=100
-        //stargazers_count
+        val starredList = getStarredList(userName, repoName, pageNumber)
 
         allDateList = starredList
+
+        getRepoList(userName, pageNumber)
 
 
         for (date in allDateList.indices) {

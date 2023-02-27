@@ -34,16 +34,16 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
     private var weekStartGlobal = "day"
     private var weekEndGlobal = "day"
     private var indexDate = 0
-
+    private var pageNumber = repo.stargazers
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SimpleDateFormat")
     fun getStarredDataList() {
         launchWithWaiting {
 
             val nameRepo = repo.name
-            var pageNumber = repo.stargazers
+
             if (pageNumber % 100 != 0) {
-                pageNumber = pageNumber / 100 +1
+                pageNumber = pageNumber / 100 + 1
             } else pageNumber /= 100
 
             val starredAtList = repoRepository.getStatisticList(pageNumber, nameUser, nameRepo)
@@ -54,6 +54,19 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
             Log.d("allDateBarList", allDateBarList.toString())
             Log.d("starredAtList", starredAtList.toString())
 
+        }
+
+    }
+
+    fun getStarredListRepeatedly() {
+        val nameRepo = repo.name
+        pageNumber -= 1
+
+        launchWithWaiting {
+            val starredAtList = repoRepository.getStatisticList(pageNumber, nameUser, nameRepo)
+            allDateBarList.addAll(starredAtList)
+
+            viewState.allDateBarList = allDateBarList
         }
 
     }
@@ -121,7 +134,7 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
 
         if (direction == DateValue.YEAR) {
             val yearNow = Calendar.YEAR
-            if (year > yearNow) {
+            if (year >= yearNow) {
                 year += 1
             }
 
@@ -166,7 +179,7 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
     }
 
     fun barChartDataCount() {
-        val dayOfWeek = 2 // Monday
+        val dayOfWeek = 2 // Monday TODO get from locale
         val now = Calendar.getInstance()
         now.set(year, month, day)
         val weekday = now[Calendar.DAY_OF_WEEK]
@@ -239,7 +252,7 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
     }
 
 
-    enum class DateValue() {
+    enum class DateValue {
         WEEK, MONTH, YEAR
     }
 
