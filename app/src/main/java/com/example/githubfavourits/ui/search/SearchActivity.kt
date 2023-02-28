@@ -8,20 +8,20 @@ import com.example.domain.entity.Repo
 import com.example.domain.entity.RepoData
 import com.example.githubfavourits.R
 import com.example.githubfavourits.ui.base.BaseActivity
+import com.omega_r.base.errors.AppException
+import com.omega_r.base.errors.AppException.AccessDenied
 import com.omega_r.bind.adapters.OmegaAutoAdapter
 import com.omega_r.bind.model.binders.bindString
 import com.omega_r.libs.omegarecyclerview.OmegaRecyclerView
 import com.omega_r.libs.omegarecyclerview.pagination.OnPageRequestListener
 import com.omegar.libs.omegalaunchers.createActivityLauncher
 import com.omegar.mvp.ktx.providePresenter
+import kotlin.reflect.jvm.internal.impl.descriptors.InvalidModuleException
 
 
 class SearchActivity : BaseActivity(R.layout.activity_search), SearchView, OnPageRequestListener {
 
     companion object {
-
-        private const val PREVENTION_VALUE = 5
-
         fun createLauncher() = createActivityLauncher()
     }
 
@@ -40,20 +40,29 @@ class SearchActivity : BaseActivity(R.layout.activity_search), SearchView, OnPag
     }
 
     private val userNameEditText: EditText by bind(R.id.edittext_user_name)
+    private val accessDenied: AccessDenied = AccessDenied("")
 
-    override var repoList: RepoData = RepoData(listOf(), false)
+    override var repoList: RepoData = RepoData(listOf(), 100)
         set(value) {
             field = value
             adapter.list = value.repoList
         }
-    override var nextQuery: Boolean = false
+
+    override var nextQuery: Int = 0
         set(value) {
             field = value
-            if (value) {
+
+            if (value < 100 && value != 0) {
                 recyclerView.hidePagination()
-            } else {
+            }
+            if (value == 100) {
                 recyclerView.showProgressPagination()
             }
+            if (value == 0) {
+                recyclerView.showErrorPagination()
+            }
+            accessDenied
+
         }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -64,18 +73,20 @@ class SearchActivity : BaseActivity(R.layout.activity_search), SearchView, OnPag
 
         userNameEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                presenter.requestRepoList(userNameEditText.text.toString(), 1)
-                recyclerView.showProgressPagination()
+                onSearchClick()
                 true
             } else false
 
         }
 
         setClickListener(R.id.button_search) {
-            val name: String = userNameEditText.text.toString()
-            presenter.requestRepoList(name, 1)
-            recyclerView.showProgressPagination()
+            onSearchClick()
         }
+    }
+
+    private fun onSearchClick() {
+        presenter.requestRepoList(userNameEditText.text.toString(), 1)
+        recyclerView.showProgressPagination()
     }
 
     override fun onPageRequest(page: Int) {

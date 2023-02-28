@@ -5,6 +5,7 @@ import com.example.domain.entity.Repo
 import com.example.domain.entity.RepoData
 import com.example.githubfavourits.ui.base.BasePresenter
 import com.example.githubfavourits.ui.statistic.StatisticActivity
+import kotlinx.coroutines.launch
 
 class SearchPresenter : BasePresenter<SearchView>() {
 
@@ -16,8 +17,8 @@ class SearchPresenter : BasePresenter<SearchView>() {
     }
     fun requestRepoList(repos: String, page: Int) {
         nameUser = repos
-        launchWithWaiting {
-            if (!viewState.nextQuery){
+        launch {
+//            if (viewState.nextQuery == 100){
 
                 val repositories = repoRepository.getRepoList(repos, page)
                 repositories.repoList.forEach { repos ->
@@ -26,7 +27,7 @@ class SearchPresenter : BasePresenter<SearchView>() {
 
                 viewState.nextQuery = repositories.allDataLoaded
                 viewState.repoList = RepoData(repoList, repositories.allDataLoaded)
-            }
+//            }
         }
 
         Log.d("pageNumber", page.toString())

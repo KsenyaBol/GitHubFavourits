@@ -6,9 +6,9 @@ import kotlin.collections.ArrayList
 
 interface StatisticView: BaseView {
 
-    var allDateBarList: ArrayList<DateStatistic>?
-    var structureDateList: ArrayList<DateStatistic>
-    var direction: Enum<StatisticPresenter.DateValue>
+    var allDateBarList: MutableList<DateStatistic>?
+    var structureDateList: MutableList<DateStatistic>
+    var direction: StatisticPresenter.Period
     var year: Int
     var month: Int
     var day: Int

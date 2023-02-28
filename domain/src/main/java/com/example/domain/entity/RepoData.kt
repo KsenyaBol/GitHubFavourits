@@ -4,6 +4,6 @@ data class RepoData (
 
     val repoList: List<Repo>,
 
-    val allDataLoaded: Boolean,
+    val allDataLoaded: Int,
 
 )

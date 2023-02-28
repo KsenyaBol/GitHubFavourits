@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.example.domain.entity.DateStatistic
 import com.example.domain.entity.Repo
-import com.example.domain.repository.RepoRepository
 import com.example.githubfavourits.R
 import com.example.githubfavourits.ui.base.BaseActivity
 import com.github.mikephil.charting.charts.BarChart
@@ -26,16 +25,14 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
-import com.omega_r.libs.extensions.date.getDateDayOfMonth
-import com.omega_r.libs.extensions.date.getDateMonth
+import com.omega_r.libs.extensions.context.getCompatColor
 import com.omega_r.libs.extensions.date.getDateYear
+import com.omega_r.libs.extensions.view.getCompatColor
 import com.omegar.libs.omegalaunchers.createActivityLauncher
 import com.omegar.libs.omegalaunchers.tools.put
 import com.omegar.mvp.ktx.providePresenter
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticView,
     OnChartValueSelectedListener {
@@ -44,7 +41,6 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
 
         private const val EXTRA_NAME_USER = "nameUser"
         private const val EXTRA_REPO = "repo"
-
 
         fun createLauncher(nameUser: String, repo: Repo) = createActivityLauncher(
             EXTRA_NAME_USER put nameUser,
@@ -55,15 +51,50 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
     override val presenter: StatisticPresenter by providePresenter {
         StatisticPresenter(this[EXTRA_NAME_USER]!!, this[EXTRA_REPO]!!)
     }
-    override var direction: Enum<StatisticPresenter.DateValue> = StatisticPresenter.DateValue.YEAR
-    override var structureDateList = arrayListOf<DateStatistic>()
-    override var allDateBarList: ArrayList<DateStatistic>? = null
+    override var direction: StatisticPresenter.Period = StatisticPresenter.Period.YEAR
+    override var structureDateList = mutableListOf<DateStatistic>()
+    override var allDateBarList: MutableList<DateStatistic>? = null
         set(value) {
             if (value != null) {
                 field = value
                 getBarChartData()
             }
         }
+
+    private val map = mapOf(
+        StatisticPresenter.Period.WEEK to listOf(
+            applicationContext.getString(R.string.Monday),
+            applicationContext.getString(R.string.Tuesday),
+            applicationContext.getString(R.string.Wednesday),
+            applicationContext.getString(R.string.Thursday),
+            applicationContext.getString(R.string.Friday),
+            applicationContext.getString(R.string.Saturday),
+            applicationContext.getString(R.string.Sunday)
+        ),
+
+        StatisticPresenter.Period.MONTH to listOf(
+            applicationContext.getString(R.string.First),
+            applicationContext.getString(R.string.Second),
+            applicationContext.getString(R.string.Third),
+            applicationContext.getString(R.string.Forth),
+            applicationContext.getString(R.string.Fifth)
+        ),
+
+        StatisticPresenter.Period.YEAR to listOf(
+            applicationContext.getString(R.string.January),
+            applicationContext.getString(R.string.February),
+            applicationContext.getString(R.string.March),
+            applicationContext.getString(R.string.April),
+            applicationContext.getString(R.string.May),
+            applicationContext.getString(R.string.June),
+            applicationContext.getString(R.string.July),
+            applicationContext.getString(R.string.August),
+            applicationContext.getString(R.string.September),
+            applicationContext.getString(R.string.October),
+            applicationContext.getString(R.string.November),
+            applicationContext.getString(R.string.December)
+        )
+    )
 
     private val timeText: TextView by bind(R.id.textview_time)
     private val weekButton: Button by bind(R.id.button_day)
@@ -72,19 +103,14 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
     private val backImageButton: ImageButton by bind(R.id.imagebutton_back)
     private val nextImageButton: ImageButton by bind(R.id.imagebutton_next)
 
-    private var barArrayList = arrayListOf<BarEntry>()
+    private var barArrayList = mutableListOf<BarEntry>()
     private val currentDate = Date()
-    private var date: Date = Date()
-    private var dateFormatForYear: DateFormat = SimpleDateFormat("yyyy", Locale.getDefault())
-    private var dateFormatForMonth: DateFormat = SimpleDateFormat("MM", Locale.getDefault())
-    private var dateFormatForDay: DateFormat = SimpleDateFormat("dd", Locale.getDefault())
-    private var quarters: List<String> = listOf("Mn", "Tu", "Wn", "Th", "Fr", "St", "Sn")
 
     override var weekEndGlobal: String = "dayStart"
     override var weekStartGlobal: String = "dayEnd"
-    override var year: Int = dateFormatForYear.format(currentDate).toInt()
-    override var month = dateFormatForMonth.format(currentDate).toInt()
-    override var day = dateFormatForDay.format(currentDate).toInt()
+    override var year: Int = SimpleDateFormat("yyyy", Locale.getDefault()).format(currentDate).toInt()
+    override var month = SimpleDateFormat("MM", Locale.getDefault()).format(currentDate).toInt()
+    override var day = SimpleDateFormat("dd", Locale.getDefault()).format(currentDate).toInt()
     override var dayOfYear = 0
 
     private val barchart: BarChart by bind(R.id.barchart) {
@@ -93,18 +119,8 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         val xFormatter: ValueFormatter = object : ValueFormatter() {
             @SuppressLint("SimpleDateFormat")
             override fun getFormattedValue(value: Float): String {
-
-                if (direction == StatisticPresenter.DateValue.WEEK) {
-                    quarters = listOf("Mn", "Tu", "Wn", "Th", "Fr", "St", "Sn")
-                }
-                if (direction == StatisticPresenter.DateValue.MONTH) {
-                    quarters = listOf("1st", "2nd", "3d", "4th", "5th")
-                }
-                if (direction == StatisticPresenter.DateValue.YEAR) {
-                    quarters = listOf("J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D")
-                }
-                xAxis.setLabelCount(quarters.size, false)
-                return quarters.getOrNull(value.toInt()) ?: value.toString()
+                xAxis.setLabelCount(map[direction]!!.size, false)
+                return map[direction]!!.getOrNull(value.toInt()) ?: value.toString()
             }
         }
 
@@ -147,7 +163,7 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         barDataSet.setDrawIcons(false)
         barDataSet.isHighlightEnabled = false
         barDataSet.form = Legend.LegendForm.NONE
-        barDataSet.color = resources.getColor(R.color.dark_greyish_blue)
+        barDataSet.color = getCompatColor(R.color.dark_greyish_blue)
 
         xAxis.valueFormatter = xFormatter
         axisLeft.valueFormatter = yFormatter
@@ -158,7 +174,7 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
     @SuppressLint("SimpleDateFormat")
     private fun getBarChartData() {
 
-        presenter.barChartDataCount()
+        presenter.getDateCount()
 
         Log.d("ListSize", allDateBarList?.size.toString())
         Log.d("datalist", structureDateList.toString())
@@ -166,15 +182,8 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         barchart.clear()
         barArrayList.clear()
 
-        structureDateList.forEachIndexed {index,  value ->
-            when(direction) {
-                StatisticPresenter.DateValue.WEEK ->
-                    barArrayList.add(BarEntry(index.toFloat(), value.userList.size.toFloat()))
-                StatisticPresenter.DateValue.MONTH ->
-                    barArrayList.add(BarEntry(index.toFloat(), value.userList.size.toFloat()))
-                StatisticPresenter.DateValue.YEAR ->
-                    barArrayList.add(BarEntry(index.toFloat(), value.userList.size.toFloat()))
-            }
+        structureDateList.forEachIndexed { index, value ->
+            barArrayList.add(BarEntry(index.toFloat(), value.userList.size.toFloat()))
         }
 
         Log.d("barlist1", barArrayList.toString())
@@ -185,15 +194,14 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         barDataSet.form = Legend.LegendForm.NONE
         barDataSet.valueTextColor = Color.BLACK
         barDataSet.valueTextSize = 14F
-        barDataSet.color = resources.getColor(R.color.dark_greyish_blue)
-
+        barDataSet.color = getCompatColor(R.color.dark_greyish_blue)
 
         barchart.data = BarData(barDataSet)
         barchart.isScaleXEnabled = false
         barchart.isScaleYEnabled = false
 
         barDataSet.setDrawIcons(false)
-        barDataSet.color = resources.getColor(R.color.dark_greyish_blue)
+        barDataSet.color = getCompatColor(R.color.dark_greyish_blue)
 
         barchart.invalidate()
     }
@@ -208,52 +216,41 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         presenter.getStarredDataList()
 
         weekButton.setOnClickListener {
-            timeText.text = "$weekStartGlobal-$weekEndGlobal.$month.$year"
-            presenter.weekButtonClicked()
-            barchart.invalidate()
-            getBarChartData()
+            onPeriodClicked(StatisticPresenter.Period.WEEK)
         }
 
         monthButton.setOnClickListener {
-            timeText.text = "$month.$year"
-            presenter.monthButtonClicked()
-            barchart.invalidate()
-            getBarChartData()
+            onPeriodClicked(StatisticPresenter.Period.MONTH)
         }
 
         yearButton.setOnClickListener {
-
-            timeText.text = year.toString()
-            presenter.yearButtonClicked()
-            barchart.invalidate()
-            getBarChartData()
+            onPeriodClicked(StatisticPresenter.Period.YEAR)
         }
 
         backImageButton.setOnClickListener {
-            presenter.backImageButtonClick()
+            presenter.onPreviousClicked()
 
-            structureDateList.forEach { value ->
-                date = value.starredAt
-            }
+            val firstElement = allDateBarList!!.first().starredAt.getDateYear()
 
-            if (direction == StatisticPresenter.DateValue.YEAR) {
+            if (direction == StatisticPresenter.Period.YEAR) {
                 timeText.text = year.toString()
-                if (date.getDateYear() - 1 == year) {
+                if (firstElement == year - 1) {
                     presenter.getStarredListRepeatedly()
                 }
             }
 
-            if (direction == StatisticPresenter.DateValue.MONTH) {
+            if (direction == StatisticPresenter.Period.MONTH) {
                 timeText.text = "$month.$year"
-                if (date.getDateYear() - 1 == year && month == 0) {
+                if (firstElement == year - 1 && month == 0) {
                     presenter.getStarredListRepeatedly()
                 }
             }
 
-            if (direction == StatisticPresenter.DateValue.WEEK) {
+            if (direction == StatisticPresenter.Period.WEEK) {
                 timeText.text = "$weekStartGlobal-$weekEndGlobal.$month.$year"
-                if (date.getDateYear() - 1 == year &&
-                    weekStartGlobal.toInt() <= 7 && month == 0) {
+                if (firstElement == year - 1 &&
+                    weekStartGlobal.toInt() <= 7 && month == 0
+                ) {
                     presenter.getStarredListRepeatedly()
                 }
             }
@@ -261,23 +258,33 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         }
 
         nextImageButton.setOnClickListener {
-            presenter.nextImageButtonClick()
+            presenter.onNextClicked()
 
-            if (direction == StatisticPresenter.DateValue.YEAR) {
-                timeText.text = year.toString()
-            }
-
-            if (direction == StatisticPresenter.DateValue.MONTH) {
-                timeText.text = "$month.$year"
-            }
-
-            if (direction == StatisticPresenter.DateValue.WEEK) {
-                timeText.text = "$weekStartGlobal-$weekEndGlobal.$month.$year"
+            when (direction) {
+                StatisticPresenter.Period.YEAR -> timeText.text = year.toString()
+                StatisticPresenter.Period.MONTH -> timeText.text = "$month.$year"
+                StatisticPresenter.Period.WEEK -> timeText.text =
+                    "$weekStartGlobal-$weekEndGlobal.$month.$year"
             }
 
             getBarChartData()
         }
 
+    }
+
+    @SuppressLint("SetTextI18n")
+    fun onPeriodClicked(period: StatisticPresenter.Period) {
+
+        when (period) {
+            StatisticPresenter.Period.WEEK -> timeText.text =
+                "$weekStartGlobal-$weekEndGlobal.$month.$year"
+            StatisticPresenter.Period.MONTH -> timeText.text = "$month.$year"
+            StatisticPresenter.Period.YEAR -> timeText.text = year.toString()
+        }
+
+        presenter.onPeriodClicked(period)
+        barchart.invalidate()
+        getBarChartData()
     }
 
     override fun onValueSelected(e: Entry?, h: Highlight?) {
@@ -287,6 +294,5 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
     override fun onNothingSelected() {
         Toast.makeText(applicationContext, "nothing", Toast.LENGTH_SHORT).show()
     }
-
 
 }

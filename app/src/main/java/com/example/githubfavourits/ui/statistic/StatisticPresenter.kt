@@ -12,6 +12,7 @@ import com.example.githubfavourits.ui.base.BasePresenter
 import com.omega_r.libs.extensions.date.getDateDayOfMonth
 import com.omega_r.libs.extensions.date.getDateMonth
 import com.omega_r.libs.extensions.date.getDateYear
+import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -22,14 +23,12 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
 
     private val allDateBarList = arrayListOf<DateStatistic>()
     private var structureDateList = arrayListOf<DateStatistic>()
-    private var direction = DateValue.YEAR
+    private var direction = Period.YEAR
     private val currentDate = Date()
-    private var dateFormatForYear: DateFormat = SimpleDateFormat("yyyy", Locale.getDefault())
-    private var dateFormatForMonth: DateFormat = SimpleDateFormat("MM", Locale.getDefault())
     private var dateFormatForDay: DateFormat = SimpleDateFormat("dd", Locale.getDefault())
-    private var year: Int = dateFormatForYear.format(currentDate).toInt()
-    private var month = dateFormatForMonth.format(currentDate).toInt()
-    private var day = dateFormatForDay.format(currentDate).toInt()
+    private var year: Int = SimpleDateFormat("yyyy", Locale.getDefault()).format(currentDate).toInt()
+    private var month = SimpleDateFormat("MM", Locale.getDefault()).format(currentDate).toInt()
+    private var day = SimpleDateFormat("dd", Locale.getDefault()).format(currentDate).toInt()
     private var dayOfYear = 0
     private var weekStartGlobal = "day"
     private var weekEndGlobal = "day"
@@ -38,7 +37,7 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SimpleDateFormat")
     fun getStarredDataList() {
-        launchWithWaiting {
+        launch {
 
             val nameRepo = repo.name
 
@@ -62,7 +61,7 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
         val nameRepo = repo.name
         pageNumber -= 1
 
-        launchWithWaiting {
+        launch {
             val starredAtList = repoRepository.getStatisticList(pageNumber, nameUser, nameRepo)
             allDateBarList.addAll(starredAtList)
 
@@ -71,28 +70,17 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
 
     }
 
-    fun yearButtonClicked() {
-        direction = DateValue.YEAR
+    fun onPeriodClicked(direction: Period) {
         viewState.direction = direction
     }
 
-    fun monthButtonClicked() {
-        direction = DateValue.MONTH
-        viewState.direction = direction
-    }
+    fun onPreviousClicked() {
 
-    fun weekButtonClicked() {
-        direction = DateValue.WEEK
-        viewState.direction = direction
-    }
-
-    fun backImageButtonClick() {
-
-        if (direction == DateValue.YEAR) {
+        if (direction == Period.YEAR) {
             year -= 1
         }
 
-        if (direction == DateValue.MONTH) {
+        if (direction == Period.MONTH) {
             val monthNow = Calendar.MONTH
             val yearNow = Calendar.YEAR
             if (month == 1) {
@@ -105,7 +93,7 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
 
         }
 
-        if (direction == DateValue.WEEK) {
+        if (direction == Period.WEEK) {
             val dayNow = Calendar.DAY_OF_MONTH
             val monthNow = Calendar.MONTH
             val yearNow = Calendar.YEAR
@@ -117,7 +105,7 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
                 month -= 1
                 day = 35
             }
-            if (day > dayNow || month > monthNow || year > yearNow) {
+            if (month > monthNow || year > yearNow) {
                 day -= 7
                 dayOfYear -= 7
             }
@@ -130,9 +118,9 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
         viewState.year = year
     }
 
-    fun nextImageButtonClick() {
+    fun onNextClicked() {
 
-        if (direction == DateValue.YEAR) {
+        if (direction == Period.YEAR) {
             val yearNow = Calendar.YEAR
             if (year >= yearNow) {
                 year += 1
@@ -140,7 +128,7 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
 
         }
 
-        if (direction == DateValue.MONTH) {
+        if (direction == Period.MONTH) {
             val monthNow = Calendar.MONTH
             val yearNow = Calendar.YEAR
             if (month == 12) {
@@ -153,7 +141,7 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
 
         }
 
-        if (direction == DateValue.WEEK) {
+        if (direction == Period.WEEK) {
             val dayNow = Calendar.DAY_OF_MONTH
             val monthNow = Calendar.MONTH
             val yearNow = Calendar.YEAR
@@ -178,8 +166,8 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
         viewState.year = year
     }
 
-    fun barChartDataCount() {
-        val dayOfWeek = 2 // Monday TODO get from locale
+    fun getDateCount() {
+        val dayOfWeek = Calendar.MONDAY
         val now = Calendar.getInstance()
         now.set(year, month, day)
         val weekday = now[Calendar.DAY_OF_WEEK]
@@ -195,9 +183,9 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
 
         structureDateList.clear()
 
-        if (direction == DateValue.YEAR) {
+        if (direction == Period.YEAR) {
 
-            for (month in 0..12) {
+            for (month in 0..11) {
                 val list = arrayListOf<User>()
                 for (date in allDateBarList.indices) {
                     if ((allDateBarList[date].starredAt.getDateYear()) == year && allDateBarList[date].starredAt.getDateMonth() ==
@@ -211,7 +199,7 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
 
         }
 
-        if (direction == DateValue.MONTH) {
+        if (direction == Period.MONTH) {
 
             for (week in 0..4) {
                 val list = arrayListOf<User>()
@@ -228,7 +216,7 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
 
         }
 
-        if (direction == DateValue.WEEK) {
+        if (direction == Period.WEEK) {
 
             for (day in 0..6) {
                 val list = arrayListOf<User>()
@@ -252,7 +240,7 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
     }
 
 
-    enum class DateValue {
+    enum class Period {
         WEEK, MONTH, YEAR
     }
 
