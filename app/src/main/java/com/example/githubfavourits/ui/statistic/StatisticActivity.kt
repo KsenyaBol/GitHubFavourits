@@ -1,6 +1,8 @@
 package com.example.githubfavourits.ui.statistic
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -41,6 +43,8 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
 
         private const val EXTRA_NAME_USER = "nameUser"
         private const val EXTRA_REPO = "repo"
+        private lateinit var myResources: Resources
+
 
         fun createLauncher(nameUser: String, repo: Repo) = createActivityLauncher(
             EXTRA_NAME_USER put nameUser,
@@ -61,40 +65,7 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
             }
         }
 
-    private val map = mapOf(
-        StatisticPresenter.Period.WEEK to listOf(
-            applicationContext.getString(R.string.Monday),
-            applicationContext.getString(R.string.Tuesday),
-            applicationContext.getString(R.string.Wednesday),
-            applicationContext.getString(R.string.Thursday),
-            applicationContext.getString(R.string.Friday),
-            applicationContext.getString(R.string.Saturday),
-            applicationContext.getString(R.string.Sunday)
-        ),
 
-        StatisticPresenter.Period.MONTH to listOf(
-            applicationContext.getString(R.string.First),
-            applicationContext.getString(R.string.Second),
-            applicationContext.getString(R.string.Third),
-            applicationContext.getString(R.string.Forth),
-            applicationContext.getString(R.string.Fifth)
-        ),
-
-        StatisticPresenter.Period.YEAR to listOf(
-            applicationContext.getString(R.string.January),
-            applicationContext.getString(R.string.February),
-            applicationContext.getString(R.string.March),
-            applicationContext.getString(R.string.April),
-            applicationContext.getString(R.string.May),
-            applicationContext.getString(R.string.June),
-            applicationContext.getString(R.string.July),
-            applicationContext.getString(R.string.August),
-            applicationContext.getString(R.string.September),
-            applicationContext.getString(R.string.October),
-            applicationContext.getString(R.string.November),
-            applicationContext.getString(R.string.December)
-        )
-    )
 
     private val timeText: TextView by bind(R.id.textview_time)
     private val weekButton: Button by bind(R.id.button_day)
@@ -115,11 +86,45 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
 
     private val barchart: BarChart by bind(R.id.barchart) {
         setOnChartValueSelectedListener(this@StatisticActivity)
+        val map = mapOf(
+            StatisticPresenter.Period.WEEK to listOf(
+                myResources.getString(R.string.Monday),
+                myResources.getString(R.string.Tuesday),
+                myResources.getString(R.string.Wednesday),
+                myResources.getString(R.string.Thursday),
+                myResources.getString(R.string.Friday),
+                myResources.getString(R.string.Saturday),
+                myResources.getString(R.string.Sunday)
+            ),
 
+            StatisticPresenter.Period.MONTH to listOf(
+                myResources.getString(R.string.First),
+                myResources.getString(R.string.Second),
+                myResources.getString(R.string.Third),
+                myResources.getString(R.string.Forth),
+                myResources.getString(R.string.Fifth)
+            ),
+
+            StatisticPresenter.Period.YEAR to listOf(
+                myResources.getString(R.string.January),
+                myResources.getString(R.string.February),
+                myResources.getString(R.string.March),
+                myResources.getString(R.string.April),
+                myResources.getString(R.string.May),
+                myResources.getString(R.string.June),
+                myResources.getString(R.string.July),
+                myResources.getString(R.string.August),
+                myResources.getString(R.string.September),
+                myResources.getString(R.string.October),
+                myResources.getString(R.string.November),
+                myResources.getString(R.string.December)
+            )
+        )
         val xFormatter: ValueFormatter = object : ValueFormatter() {
             @SuppressLint("SimpleDateFormat")
             override fun getFormattedValue(value: Float): String {
-                xAxis.setLabelCount(map[direction]!!.size, false)
+                myResources = resources
+                barchart.xAxis.setLabelCount(map[direction]!!.size, false)
                 return map[direction]!!.getOrNull(value.toInt()) ?: value.toString()
             }
         }
@@ -130,7 +135,6 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
                 return "$v"
             }
         }
-
         val barDataSet = BarDataSet(barArrayList, "")
         val barData = BarData(barDataSet)
 
@@ -171,45 +175,12 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         invalidate()
     }
 
-    @SuppressLint("SimpleDateFormat")
-    private fun getBarChartData() {
-
-        presenter.getDateCount()
-
-        Log.d("ListSize", allDateBarList?.size.toString())
-        Log.d("datalist", structureDateList.toString())
-
-        barchart.clear()
-        barArrayList.clear()
-
-        structureDateList.forEachIndexed { index, value ->
-            barArrayList.add(BarEntry(index.toFloat(), value.userList.size.toFloat()))
-        }
-
-        Log.d("barlist1", barArrayList.toString())
-
-        val barDataSet = BarDataSet(barArrayList, "")
-
-        barDataSet.isHighlightEnabled = false
-        barDataSet.form = Legend.LegendForm.NONE
-        barDataSet.valueTextColor = Color.BLACK
-        barDataSet.valueTextSize = 14F
-        barDataSet.color = getCompatColor(R.color.dark_greyish_blue)
-
-        barchart.data = BarData(barDataSet)
-        barchart.isScaleXEnabled = false
-        barchart.isScaleYEnabled = false
-
-        barDataSet.setDrawIcons(false)
-        barDataSet.color = getCompatColor(R.color.dark_greyish_blue)
-
-        barchart.invalidate()
-    }
-
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SetTextI18n", "SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        myResources = resources
 
         timeText.text = year.toString()
 
@@ -270,6 +241,42 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
             getBarChartData()
         }
 
+    }
+
+
+
+    @SuppressLint("SimpleDateFormat")
+    private fun getBarChartData() {
+
+        presenter.getDateCount()
+
+        Log.d("StatisticActListSize", allDateBarList?.size.toString())
+        Log.d("StatisticActDateList", structureDateList.toString())
+
+        barchart.clear()
+        barArrayList.clear()
+
+        structureDateList.forEachIndexed { index, value ->
+            barArrayList.add(BarEntry(index.toFloat(), value.userList.size.toFloat()))
+        }
+
+        Log.d("StatisticActBarList", barArrayList.toString())
+
+        val barDataSet = BarDataSet(barArrayList, "")
+
+        barDataSet.isHighlightEnabled = false
+        barDataSet.form = Legend.LegendForm.NONE
+        barDataSet.valueTextColor = Color.BLACK
+        barDataSet.valueTextSize = 14F
+
+        barchart.data = BarData(barDataSet)
+        barchart.isScaleXEnabled = false
+        barchart.isScaleYEnabled = false
+
+        barDataSet.setDrawIcons(false)
+        barDataSet.color = getCompatColor(R.color.dark_greyish_blue)
+
+        barchart.invalidate()
     }
 
     @SuppressLint("SetTextI18n")

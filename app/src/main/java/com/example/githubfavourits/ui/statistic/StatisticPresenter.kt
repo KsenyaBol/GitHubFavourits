@@ -21,8 +21,8 @@ import java.util.*
 class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
     BasePresenter<StatisticView>() {
 
-    private val allDateBarList = arrayListOf<DateStatistic>()
-    private var structureDateList = arrayListOf<DateStatistic>()
+    private val allDateBarList = mutableListOf<DateStatistic>()
+    private var structureDateList = mutableListOf<DateStatistic>()
     private var direction = Period.YEAR
     private val currentDate = Date()
     private var dateFormatForDay: DateFormat = SimpleDateFormat("dd", Locale.getDefault())
@@ -50,8 +50,8 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
 
             viewState.allDateBarList = allDateBarList
 
-            Log.d("allDateBarList", allDateBarList.toString())
-            Log.d("starredAtList", starredAtList.toString())
+            Log.d("StatisticPrAllDate", allDateBarList.toString())
+            Log.d("StatisticPrStarredAt", starredAtList.toString())
 
         }
 

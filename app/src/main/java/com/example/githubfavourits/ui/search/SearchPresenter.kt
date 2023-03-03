@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 class SearchPresenter : BasePresenter<SearchView>() {
 
     private var nameUser: String = ""
-    private var repoList = arrayListOf<Repo>()
+    private var repoList = mutableListOf<Repo>()
 
     fun onReposButtonClicked(repo: Repo) {
         StatisticActivity.createLauncher(nameUser, repo).launch()
@@ -18,7 +18,6 @@ class SearchPresenter : BasePresenter<SearchView>() {
     fun requestRepoList(repos: String, page: Int) {
         nameUser = repos
         launch {
-//            if (viewState.nextQuery == 100){
 
                 val repositories = repoRepository.getRepoList(repos, page)
                 repositories.repoList.forEach { repos ->
@@ -27,10 +26,9 @@ class SearchPresenter : BasePresenter<SearchView>() {
 
                 viewState.nextQuery = repositories.allDataLoaded
                 viewState.repoList = RepoData(repoList, repositories.allDataLoaded)
-//            }
         }
 
-        Log.d("pageNumber", page.toString())
+        Log.d("SearchScreenPageNum", page.toString())
     }
 
 }

@@ -1,6 +1,7 @@
 package com.example.data.di
 
 import android.annotation.SuppressLint
+import com.example.data.AppErrorHandler
 import com.example.data.repository.RepoRepositoryImpl
 import com.example.data.source.RemoteRepoSource
 import com.example.domain.di.Injector

@@ -2,9 +2,7 @@ package com.example.domain.repository
 
 
 import com.example.domain.entity.DateStatistic
-import com.example.domain.entity.Repo
 import com.example.domain.entity.RepoData
-import java.util.*
 
 interface RepoRepository {
 
