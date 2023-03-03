@@ -8,6 +8,6 @@ interface RepoRepository {
 
     suspend fun getRepoList(userName: String, pageNumber: Int): RepoData
 
-    suspend fun getStatisticList(pageNumber: Int, userName: String, repoName: String): List<DateStatistic>
+    suspend fun getStatisticList(pageNumber: Int, userName: String, repoName: String): List<DateStatistic> // TODO enum Period, offset
 
 }

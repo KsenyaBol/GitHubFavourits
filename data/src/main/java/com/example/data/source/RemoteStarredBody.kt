@@ -9,6 +9,6 @@ data class RemoteStarredBody (
     val starredAt: Date,
 
     @Json(name = "user")
-    val userList: RemoteUserBody
+    val user: RemoteUserBody
 
 )

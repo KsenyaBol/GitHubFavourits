@@ -26,8 +26,8 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
     private var direction = Period.YEAR
     private val currentDate = Date()
     private var dateFormatForDay: DateFormat = SimpleDateFormat("dd", Locale.getDefault())
-    private var year: Int = SimpleDateFormat("yyyy", Locale.getDefault()).format(currentDate).toInt()
-    private var month = SimpleDateFormat("MM", Locale.getDefault()).format(currentDate).toInt()
+    private var year: Int = currentDate.getDateYear()
+    private var month = SimpleDateFormat("MM", Locale.getDefault()).format(currentDate).toInt() // TODO
     private var day = SimpleDateFormat("dd", Locale.getDefault()).format(currentDate).toInt()
     private var dayOfYear = 0
     private var weekStartGlobal = "day"
@@ -36,12 +36,12 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
     private var pageNumber = repo.stargazers
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SimpleDateFormat")
-    fun getStarredDataList() {
+    fun getStarredDataList() { // TODO get => request, call in init presenter
         launch {
 
             val nameRepo = repo.name
 
-            if (pageNumber % 100 != 0) {
+            if (pageNumber % 100 != 0) { // TODO go to Repository
                 pageNumber = pageNumber / 100 + 1
             } else pageNumber /= 100
 
@@ -62,16 +62,19 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
         pageNumber -= 1
 
         launch {
-            val starredAtList = repoRepository.getStatisticList(pageNumber, nameUser, nameRepo)
-            allDateBarList.addAll(starredAtList)
+            if (pageNumber != 0) {
+                val starredAtList = repoRepository.getStatisticList(pageNumber, nameUser, nameRepo)
+                allDateBarList.addAll(starredAtList)
 
-            viewState.allDateBarList = allDateBarList
+                viewState.allDateBarList = allDateBarList
+            }
         }
 
     }
 
     fun onPeriodClicked(direction: Period) {
         viewState.direction = direction
+        this.direction = direction
     }
 
     fun onPreviousClicked() {
@@ -166,7 +169,7 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
         viewState.year = year
     }
 
-    fun getDateCount() {
+    fun getDateCount() { // TODO to Repository
         val dayOfWeek = Calendar.MONDAY
         val now = Calendar.getInstance()
         now.set(year, month, day)

@@ -1,7 +1,6 @@
 package com.example.githubfavourits.ui.statistic
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
@@ -65,21 +64,19 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
             }
         }
 
-
-
     private val timeText: TextView by bind(R.id.textview_time)
     private val weekButton: Button by bind(R.id.button_day)
     private val monthButton: Button by bind(R.id.button_month)
     private val yearButton: Button by bind(R.id.button_year)
-    private val backImageButton: ImageButton by bind(R.id.imagebutton_back)
-    private val nextImageButton: ImageButton by bind(R.id.imagebutton_next)
+    private val previousButton: ImageButton by bind(R.id.imagebutton_back)
+    private val nextButton: ImageButton by bind(R.id.imagebutton_next)
 
     private var barArrayList = mutableListOf<BarEntry>()
     private val currentDate = Date()
 
     override var weekEndGlobal: String = "dayStart"
     override var weekStartGlobal: String = "dayEnd"
-    override var year: Int = SimpleDateFormat("yyyy", Locale.getDefault()).format(currentDate).toInt()
+    override var year: Int = SimpleDateFormat("yyyy", Locale.getDefault()).format(currentDate).toInt() // TODO
     override var month = SimpleDateFormat("MM", Locale.getDefault()).format(currentDate).toInt()
     override var day = SimpleDateFormat("dd", Locale.getDefault()).format(currentDate).toInt()
     override var dayOfYear = 0
@@ -125,11 +122,11 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
             override fun getFormattedValue(value: Float): String {
                 myResources = resources
                 barchart.xAxis.setLabelCount(map[direction]!!.size, false)
-                return map[direction]!!.getOrNull(value.toInt()) ?: value.toString()
+                return map[direction]?.getOrNull(value.toInt()) ?: value.toString()
             }
         }
 
-        val yFormatter: ValueFormatter = object : ValueFormatter() {
+        val yFormatter: ValueFormatter = object : ValueFormatter() { // TODO check
             override fun getFormattedValue(value: Float): String {
                 val v = value.toInt()
                 return "$v"
@@ -198,7 +195,7 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
             onPeriodClicked(StatisticPresenter.Period.YEAR)
         }
 
-        backImageButton.setOnClickListener {
+        previousButton.setOnClickListener {
             presenter.onPreviousClicked()
 
             val firstElement = allDateBarList!!.first().starredAt.getDateYear()
@@ -228,7 +225,7 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
             getBarChartData()
         }
 
-        nextImageButton.setOnClickListener {
+        nextButton.setOnClickListener {
             presenter.onNextClicked()
 
             when (direction) {
@@ -280,7 +277,7 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
     }
 
     @SuppressLint("SetTextI18n")
-    fun onPeriodClicked(period: StatisticPresenter.Period) {
+    fun onPeriodClicked(period: StatisticPresenter.Period) { // TODO private
 
         when (period) {
             StatisticPresenter.Period.WEEK -> timeText.text =

@@ -62,7 +62,7 @@ abstract class DataInjector: Injector {
         .build()
 
     override val repoRepository: RepoRepository =
-        RepoRepositoryImpl(errorHandler = ErrorHandler(), RemoteRepoSource(retrofit.create()))
+        RepoRepositoryImpl(errorHandler = AppErrorHandler(), RemoteRepoSource(retrofit.create()))
 
 
 }

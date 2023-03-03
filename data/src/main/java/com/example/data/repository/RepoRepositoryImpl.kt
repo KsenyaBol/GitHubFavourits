@@ -30,11 +30,9 @@ class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSou
 
         for (date in allDateList.indices) {
             val list = mutableListOf<User>()
-            list.clear()
-            list.add(allDateList[date].userList)
+            list.add(allDateList[date].user)
 
-            structureDateList.add(RepoDateStatistic(allDateList[date].starredAt, list))
-
+            structureDateList.add(RepoDateStatistic(allDateList[date].starredAt, list)) // TODO что-то не то
         }
 
         Log.d("allDateList", allDateList.toString())
