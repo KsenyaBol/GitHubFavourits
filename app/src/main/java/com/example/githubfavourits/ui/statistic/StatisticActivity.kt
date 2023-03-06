@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.example.domain.entity.DateStatistic
 import com.example.domain.entity.Repo
+import com.example.domain.repository.RepoRepository
 import com.example.githubfavourits.R
 import com.example.githubfavourits.ui.base.BaseActivity
 import com.github.mikephil.charting.charts.BarChart
@@ -27,12 +28,13 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.omega_r.libs.extensions.context.getCompatColor
+import com.omega_r.libs.extensions.date.getDateDayOfMonth
+import com.omega_r.libs.extensions.date.getDateMonth
 import com.omega_r.libs.extensions.date.getDateYear
 import com.omega_r.libs.extensions.view.getCompatColor
 import com.omegar.libs.omegalaunchers.createActivityLauncher
 import com.omegar.libs.omegalaunchers.tools.put
 import com.omegar.mvp.ktx.providePresenter
-import java.text.SimpleDateFormat
 import java.util.*
 
 class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticView,
@@ -54,15 +56,15 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
     override val presenter: StatisticPresenter by providePresenter {
         StatisticPresenter(this[EXTRA_NAME_USER]!!, this[EXTRA_REPO]!!)
     }
-    override var direction: StatisticPresenter.Period = StatisticPresenter.Period.YEAR
-    override var structureDateList = mutableListOf<DateStatistic>()
-    override var allDateBarList: MutableList<DateStatistic>? = null
-        set(value) {
-            if (value != null) {
-                field = value
-                getBarChartData()
-            }
+    override var direction: RepoRepository.Period = RepoRepository.Period.YEAR
+    override var structureDateList: MutableList<DateStatistic>? = null
+    @RequiresApi(Build.VERSION_CODES.O)
+    set(value) {
+        if (value != null) {
+            field = value
+            getBarChartData()
         }
+    }
 
     private val timeText: TextView by bind(R.id.textview_time)
     private val weekButton: Button by bind(R.id.button_day)
@@ -76,15 +78,15 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
 
     override var weekEndGlobal: String = "dayStart"
     override var weekStartGlobal: String = "dayEnd"
-    override var year: Int = SimpleDateFormat("yyyy", Locale.getDefault()).format(currentDate).toInt() // TODO
-    override var month = SimpleDateFormat("MM", Locale.getDefault()).format(currentDate).toInt()
-    override var day = SimpleDateFormat("dd", Locale.getDefault()).format(currentDate).toInt()
+    override var year: Int = currentDate.getDateYear()
+    override var month = currentDate.getDateMonth()
+    override var day = currentDate.getDateDayOfMonth()
     override var dayOfYear = 0
 
     private val barchart: BarChart by bind(R.id.barchart) {
         setOnChartValueSelectedListener(this@StatisticActivity)
         val map = mapOf(
-            StatisticPresenter.Period.WEEK to listOf(
+            RepoRepository.Period.WEEK to listOf(
                 myResources.getString(R.string.Monday),
                 myResources.getString(R.string.Tuesday),
                 myResources.getString(R.string.Wednesday),
@@ -94,7 +96,7 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
                 myResources.getString(R.string.Sunday)
             ),
 
-            StatisticPresenter.Period.MONTH to listOf(
+            RepoRepository.Period.MONTH to listOf(
                 myResources.getString(R.string.First),
                 myResources.getString(R.string.Second),
                 myResources.getString(R.string.Third),
@@ -102,7 +104,7 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
                 myResources.getString(R.string.Fifth)
             ),
 
-            StatisticPresenter.Period.YEAR to listOf(
+            RepoRepository.Period.YEAR to listOf(
                 myResources.getString(R.string.January),
                 myResources.getString(R.string.February),
                 myResources.getString(R.string.March),
@@ -184,44 +186,35 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         presenter.getStarredDataList()
 
         weekButton.setOnClickListener {
-            onPeriodClicked(StatisticPresenter.Period.WEEK)
+            onPeriodClicked(RepoRepository.Period.WEEK)
         }
 
         monthButton.setOnClickListener {
-            onPeriodClicked(StatisticPresenter.Period.MONTH)
+            onPeriodClicked(RepoRepository.Period.MONTH)
         }
 
         yearButton.setOnClickListener {
-            onPeriodClicked(StatisticPresenter.Period.YEAR)
+            onPeriodClicked(RepoRepository.Period.YEAR)
         }
 
         previousButton.setOnClickListener {
             presenter.onPreviousClicked()
 
-            val firstElement = allDateBarList!!.first().starredAt.getDateYear()
-
-            if (direction == StatisticPresenter.Period.YEAR) {
+            if (direction == RepoRepository.Period.YEAR) {
                 timeText.text = year.toString()
-                if (firstElement == year - 1) {
-                    presenter.getStarredListRepeatedly()
-                }
+
             }
 
-            if (direction == StatisticPresenter.Period.MONTH) {
+            if (direction == RepoRepository.Period.MONTH) {
                 timeText.text = "$month.$year"
-                if (firstElement == year - 1 && month == 0) {
-                    presenter.getStarredListRepeatedly()
-                }
+
             }
 
-            if (direction == StatisticPresenter.Period.WEEK) {
+            if (direction == RepoRepository.Period.WEEK) {
                 timeText.text = "$weekStartGlobal-$weekEndGlobal.$month.$year"
-                if (firstElement == year - 1 &&
-                    weekStartGlobal.toInt() <= 7 && month == 0
-                ) {
-                    presenter.getStarredListRepeatedly()
-                }
             }
+
+            presenter.getStarredDataList()
             getBarChartData()
         }
 
@@ -229,9 +222,9 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
             presenter.onNextClicked()
 
             when (direction) {
-                StatisticPresenter.Period.YEAR -> timeText.text = year.toString()
-                StatisticPresenter.Period.MONTH -> timeText.text = "$month.$year"
-                StatisticPresenter.Period.WEEK -> timeText.text =
+                RepoRepository.Period.YEAR -> timeText.text = year.toString()
+                RepoRepository.Period.MONTH -> timeText.text = "$month.$year"
+                RepoRepository.Period.WEEK -> timeText.text =
                     "$weekStartGlobal-$weekEndGlobal.$month.$year"
             }
 
@@ -240,20 +233,17 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
 
     }
 
-
-
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SimpleDateFormat")
     private fun getBarChartData() {
 
-        presenter.getDateCount()
-
-        Log.d("StatisticActListSize", allDateBarList?.size.toString())
+//        Log.d("StatisticActListSize", allDateBarList?.size.toString())
         Log.d("StatisticActDateList", structureDateList.toString())
 
         barchart.clear()
         barArrayList.clear()
 
-        structureDateList.forEachIndexed { index, value ->
+        structureDateList?.forEachIndexed { index, value ->
             barArrayList.add(BarEntry(index.toFloat(), value.userList.size.toFloat()))
         }
 
@@ -276,14 +266,15 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
         barchart.invalidate()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SetTextI18n")
-    fun onPeriodClicked(period: StatisticPresenter.Period) { // TODO private
+    private fun onPeriodClicked(period: RepoRepository.Period) {
 
         when (period) {
-            StatisticPresenter.Period.WEEK -> timeText.text =
+            RepoRepository.Period.WEEK -> timeText.text =
                 "$weekStartGlobal-$weekEndGlobal.$month.$year"
-            StatisticPresenter.Period.MONTH -> timeText.text = "$month.$year"
-            StatisticPresenter.Period.YEAR -> timeText.text = year.toString()
+            RepoRepository.Period.MONTH -> timeText.text = "$month.$year"
+            RepoRepository.Period.YEAR -> timeText.text = year.toString()
         }
 
         presenter.onPeriodClicked(period)
