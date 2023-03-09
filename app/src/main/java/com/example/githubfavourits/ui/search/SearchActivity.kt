@@ -2,6 +2,7 @@ package com.example.githubfavourits.ui.search
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import com.example.domain.entity.Repo
@@ -68,22 +69,16 @@ class SearchActivity : BaseActivity(R.layout.activity_search), SearchView, OnPag
 
         userNameEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                onSearchClick()
+                onPageRequest(1)
                 true
             } else false
         }
 
         setClickListener(R.id.button_search) {
-            onSearchClick()
+            onPageRequest(1)
         }
 
     }
-
-    private fun onSearchClick() {
-        presenter.requestRepoList(userNameEditText.text.toString(), 1)
-        recyclerView.showProgressPagination()
-    }
-
     override fun onPageRequest(page: Int) {
         presenter.requestRepoList(userNameEditText.text.toString(), page)
     }

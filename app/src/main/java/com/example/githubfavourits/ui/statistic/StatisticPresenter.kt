@@ -26,13 +26,12 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
     private var month = currentDate.getDateMonth()
     private var day = currentDate.getDateDayOfMonth()
     private var dayOfYear = 0
-
+    private var displacement: Int = currentDate.getDateYear()
 
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SimpleDateFormat")
     fun getStarredDataList() {
 
-        Log.d("yearNow", year.toString())
         launch {
 
             structureDateList.clear()
@@ -43,17 +42,33 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
             val weekday = now1[Calendar.DAY_OF_WEEK]
             val days = (LocalDate.now().dayOfYear - weekday + dayOfWeek) % 7
             now1.add(Calendar.DAY_OF_YEAR, days)
-            val weekStart = now1.time
+            val weekStart = now1.time.getDateDayOfMonth()
             now1.add(Calendar.DAY_OF_YEAR, 6)
-            val weekEnd = now1.time
+            val weekEnd = now1.time.getDateDayOfMonth()
 
             viewState.weekStartGlobal = weekStart.toString()
             viewState.weekEndGlobal = weekEnd.toString()
 
             val nameRepo = repo.name
-            val now = Date((year - 1900), month, day)
 
-            val starredAtList = repoRepository.getStatisticList(direction, now, nameUser, nameRepo)
+
+//            displacement = when(direction) {
+//                RepoRepository.Period.YEAR -> year
+//                RepoRepository.Period.MONTH -> month
+//                RepoRepository.Period.WEEK -> day
+//            }
+
+            if (direction == RepoRepository.Period.YEAR) {
+                displacement = year
+            }
+            if (direction == RepoRepository.Period.MONTH) {
+                displacement = month
+            }
+            if (direction == RepoRepository.Period.WEEK) {
+                displacement = day
+            }
+
+            val starredAtList = repoRepository.getStatisticList(direction, displacement, nameUser, nameRepo)
             structureDateList.addAll(starredAtList)
 
             viewState.structureDateList = structureDateList

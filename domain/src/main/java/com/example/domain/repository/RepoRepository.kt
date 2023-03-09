@@ -3,7 +3,6 @@ package com.example.domain.repository
 
 import com.example.domain.entity.DateStatistic
 import com.example.domain.entity.RepoData
-import java.util.Date
 
 interface RepoRepository {
 
@@ -15,7 +14,7 @@ interface RepoRepository {
 
     suspend fun getStatisticList
                 (period: Period,
-                 displacement: Date,
+                 displacement: Int,
                  userName: String,
                  repoName: String
     ): List<DateStatistic>

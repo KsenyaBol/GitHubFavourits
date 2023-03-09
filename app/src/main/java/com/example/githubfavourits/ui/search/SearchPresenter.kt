@@ -26,7 +26,9 @@ class SearchPresenter : BasePresenter<SearchView>() {
 
                 viewState.nextQuery = repositories.allDataLoaded
                 viewState.repoList = RepoData(repoList, repositories.allDataLoaded)
+            Log.d("SearchScreeenRepoList", repositories.toString())
         }
+
 
         Log.d("SearchScreenPageNum", page.toString())
     }

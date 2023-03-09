@@ -23,8 +23,11 @@ class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSou
     private var allDateList = mutableListOf<RemoteStarredBody>()
     private var structureDateList = mutableListOf<DateStatistic>()
     private var currentDate = Date()
+    private var year: Int = currentDate.getDateYear()
+    private var month = currentDate.getDateMonth()
+    private var dayNow = currentDate.getDateDayOfMonth()
     private var indexDate = 0
-    private var pageCount = 100
+    private var pageCount = 1000
 
     override suspend fun getRepoList(userName: String, pageNumber: Int): RepoData {
         val repoList = getRepoRepositoryList(userName, pageNumber)
@@ -35,28 +38,27 @@ class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSou
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun getStatisticList(
         period: RepoRepository.Period,
-        displacement: Date,
+        displacement: Int,
         userName: String,
         repoName: String
     ): List<DateStatistic> {
 
         Log.d("displacement", displacement.toString())
-        Log.d("displacementYear", displacement.getDateYear().toString())
 
         if (pageCount % 100 != 0) {
             pageCount = pageCount / 100 + 1
         } else pageCount /= 100
 
+
         if (allDateList.size != 0) {
-            if (allDateList.first().starredAt.getDateYear() < displacement.getDateYear()) {
+            if (allDateList.first().starredAt.getDateYear() < displacement) {
                 println("nothing")
             } else {
-                while (allDateList.first().starredAt.getDateYear() >= displacement.getDateYear()) {
+                while (allDateList.first().starredAt.getDateYear() >= displacement) {
                     if (pageCount != 0) {
-                        pageCount -= 1
+                        pageCount += 1
                         val starred = getStarredList(userName, repoName, pageCount)
                         allDateList.addAll(starred)
-
                     }
                 }
             }
@@ -64,24 +66,20 @@ class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSou
             val starredList = getStarredList(userName, repoName, pageCount)
             allDateList.addAll(starredList)
             Log.d("allDateListFirst", allDateList.first().starredAt.getDateYear().toString())
-            while (allDateList.first().starredAt.getDateYear() >= displacement.getDateYear()) {
+            while (allDateList.first().starredAt.getDateYear() >= year) {
                 if (pageCount != 0) {
-                    pageCount -= 1
+                    pageCount += 1
                     val starred = getStarredList(userName, repoName, pageCount)
                     allDateList.addAll(starred)
                 }
             }
         }
-
+        Log.d("pageCountRepoRepos", pageCount.toString())
         Log.d("allDateListRepo", allDateList.toString())
 
         val dayOfWeek = Calendar.MONDAY
         val now = Calendar.getInstance()
-        now.set(
-            currentDate.getDateYear(),
-            currentDate.getDateMonth(),
-            currentDate.getDateDayOfMonth()
-        )
+        now.set(year, month, dayNow)
         val weekday = now[Calendar.DAY_OF_WEEK]
         val days = (LocalDate.now().dayOfYear - weekday + dayOfWeek) % 7
         now.add(Calendar.DAY_OF_YEAR, days)
@@ -92,11 +90,12 @@ class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSou
 
         if (period == RepoRepository.Period.YEAR) {
             structureDateList.clear()
+            year = displacement
 
             for (month in 0..11) {
                 val list = mutableListOf<User>()
                 for (date in allDateList.indices) {
-                    if ((allDateList[date].starredAt.getDateYear()) == displacement.getDateYear() &&
+                    if ((allDateList[date].starredAt.getDateYear()) == year &&
                         allDateList[date].starredAt.getDateMonth() == month
                     ) {
                         list.add(allDateList[date].user)
@@ -110,12 +109,13 @@ class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSou
 
         if (period == RepoRepository.Period.MONTH) {
             structureDateList.clear()
+            month = displacement
 
             for (week in 0..4) {
                 val list = mutableListOf<User>()
                 for (date in allDateList.indices) {
-                    if ((allDateList[date].starredAt.getDateYear()) == displacement.getDateYear() &&
-                        allDateList[date].starredAt.getDateMonth() == displacement.getDateMonth() &&
+                    if ((allDateList[date].starredAt.getDateYear()) == year &&
+                        allDateList[date].starredAt.getDateMonth() == month &&
                         (allDateList[date].starredAt.getDateDayOfMonth() / 7 - 1) == week
                     ) {
                         list.add(allDateList[date].user)
@@ -129,12 +129,13 @@ class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSou
 
         if (period == RepoRepository.Period.WEEK) {
             structureDateList.clear()
+            dayNow = displacement
 
             for (day in 0..6) {
                 val list = mutableListOf<User>()
                 for (date in allDateList.indices) {
-                    if ((allDateList[date].starredAt.getDateYear()) == displacement.getDateYear() &&
-                        allDateList[date].starredAt.getDateMonth() == displacement.getDateMonth() &&
+                    if ((allDateList[date].starredAt.getDateYear()) == year &&
+                        allDateList[date].starredAt.getDateMonth() == month &&
                         allDateList[date].starredAt in periodWeek && allDateList[date].starredAt.getDateDayOfMonth() == day
                     ) {
                         list.add(allDateList[date].user)
@@ -149,6 +150,8 @@ class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSou
         Log.d("RepoRepositoryImpl", structureDateList.toString())
         return structureDateList
     }
+
+
 
 
 }

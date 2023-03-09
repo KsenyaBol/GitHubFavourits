@@ -237,7 +237,6 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
     @SuppressLint("SimpleDateFormat")
     private fun getBarChartData() {
 
-//        Log.d("StatisticActListSize", allDateBarList?.size.toString())
         Log.d("StatisticActDateList", structureDateList.toString())
 
         barchart.clear()
