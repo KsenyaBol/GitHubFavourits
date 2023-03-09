@@ -43,7 +43,7 @@ class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSou
         repoName: String
     ): List<DateStatistic> {
 
-        Log.d("displacement", displacement.toString())
+        Log.d("RepoDisplacement", displacement.toString())
 
         if (pageCount % 100 != 0) {
             pageCount = pageCount / 100 + 1

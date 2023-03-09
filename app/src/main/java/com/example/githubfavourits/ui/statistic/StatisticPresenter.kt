@@ -67,11 +67,13 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
             if (direction == RepoRepository.Period.WEEK) {
                 displacement = day
             }
+            Log.d("displacement", displacement.toString())
 
             val starredAtList = repoRepository.getStatisticList(direction, displacement, nameUser, nameRepo)
             structureDateList.addAll(starredAtList)
 
             viewState.structureDateList = structureDateList
+            Log.d("StPrStarredAtList", starredAtList.toString())
 
             Log.d("StatisticPrStarredAt", starredAtList.toString())
 
