@@ -28,10 +28,14 @@ class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSou
     private var dayNow = currentDate.getDateDayOfMonth()
     private var indexDate = 0
     private var pageCount = 1000
+    private var count = 0
+    private var pageNumber = 1
+    private var queryCount = 0
 
     override suspend fun getRepoList(userName: String, pageNumber: Int): RepoData {
         val repoList = getRepoRepositoryList(userName, pageNumber)
-        pageCount = repoList[1].stargazers
+        this.pageNumber = pageNumber
+        queryCount += 1
         return RepoData(repoList, repoList.size)
     }
 
@@ -45,20 +49,31 @@ class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSou
 
         Log.d("RepoDisplacement", displacement.toString())
 
+        val repoList = getRepoRepositoryList(userName, pageNumber)
+        repoList.forEachIndexed { index, repo ->
+            if(repo.name == repoName) pageCount = repoList[index].stargazers
+        }
+
         if (pageCount % 100 != 0) {
             pageCount = pageCount / 100 + 1
         } else pageCount /= 100
 
 
         if (allDateList.size != 0) {
-            if (allDateList.first().starredAt.getDateYear() < displacement) {
+            Log.d("yearRepoRep", year.toString())
+            Log.d("displacementRepoRep", displacement.toString())
+            if (allDateList.first().starredAt.getDateYear() < year + 1) {
                 println("nothing")
             } else {
-                while (allDateList.first().starredAt.getDateYear() >= displacement) {
+                while (allDateList.first().starredAt.getDateYear() <= year + 1) {
                     if (pageCount != 0) {
-                        pageCount += 1
-                        val starred = getStarredList(userName, repoName, pageCount)
-                        allDateList.addAll(starred)
+                        pageCount -= 1
+                        if (queryCount < 60) {
+                            val starred = getStarredList(userName, repoName, pageCount)
+                            allDateList.addAll(starred)
+                            Log.d("pageCountWhile", pageCount.toString())
+                            queryCount += 1
+                        }
                     }
                 }
             }
@@ -66,14 +81,20 @@ class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSou
             val starredList = getStarredList(userName, repoName, pageCount)
             allDateList.addAll(starredList)
             Log.d("allDateListFirst", allDateList.first().starredAt.getDateYear().toString())
-            while (allDateList.first().starredAt.getDateYear() >= year) {
+            while (allDateList.first().starredAt.getDateYear() <= year + 1) {
                 if (pageCount != 0) {
-                    pageCount += 1
-                    val starred = getStarredList(userName, repoName, pageCount)
-                    allDateList.addAll(starred)
+                    pageCount -= 1
+                    if (queryCount < 60){
+                        val starred = getStarredList(userName, repoName, pageCount)
+                        allDateList.addAll(starred)
+                        queryCount += 1
+                    }
                 }
             }
         }
+
+        count += 1
+
         Log.d("pageCountRepoRepos", pageCount.toString())
         Log.d("allDateListRepo", allDateList.toString())
 
@@ -147,6 +168,8 @@ class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSou
 
         }
 
+        Log.d("queryCount", queryCount.toString())
+        Log.d("countRepo", count.toString())
         Log.d("RepoRepositoryImpl", structureDateList.toString())
         return structureDateList
     }

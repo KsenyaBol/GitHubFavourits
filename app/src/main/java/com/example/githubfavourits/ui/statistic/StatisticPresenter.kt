@@ -27,6 +27,7 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
     private var day = currentDate.getDateDayOfMonth()
     private var dayOfYear = 0
     private var displacement: Int = currentDate.getDateYear()
+    private var count = 0
 
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SimpleDateFormat")
@@ -72,9 +73,12 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
             val starredAtList = repoRepository.getStatisticList(direction, displacement, nameUser, nameRepo)
             structureDateList.addAll(starredAtList)
 
-            viewState.structureDateList = structureDateList
-            Log.d("StPrStarredAtList", starredAtList.toString())
+            count += 1
 
+            viewState.structureDateList = structureDateList
+
+            Log.d("count", count.toString())
+            Log.d("StPrStarredAtList", starredAtList.toString())
             Log.d("StatisticPrStarredAt", starredAtList.toString())
 
         }

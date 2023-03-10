@@ -11,6 +11,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import com.example.data.AppErrorHandler
 import com.example.domain.entity.DateStatistic
 import com.example.domain.entity.Repo
 import com.example.domain.repository.RepoRepository
@@ -27,6 +28,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.omega_r.base.errors.ErrorHandler
 import com.omega_r.libs.extensions.context.getCompatColor
 import com.omega_r.libs.extensions.date.getDateDayOfMonth
 import com.omega_r.libs.extensions.date.getDateMonth
