@@ -230,6 +230,7 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
                     "$weekStartGlobal-$weekEndGlobal.$month.$year"
             }
 
+            presenter.getStarredDataList()
             getBarChartData()
         }
 
@@ -278,9 +279,10 @@ class StatisticActivity : BaseActivity(R.layout.activity_statistic), StatisticVi
             RepoRepository.Period.YEAR -> timeText.text = year.toString()
         }
 
+        presenter.getStarredDataList()
+        getBarChartData()
         presenter.onPeriodClicked(period)
         barchart.invalidate()
-        getBarChartData()
     }
 
     override fun onValueSelected(e: Entry?, h: Highlight?) {

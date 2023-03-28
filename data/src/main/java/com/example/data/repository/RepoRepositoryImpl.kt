@@ -7,6 +7,7 @@ import com.example.domain.entity.RepoData
 import com.example.data.entities.RepoDateStatistic
 import com.example.data.source.RemoteStarredBody
 import com.example.domain.entity.DateStatistic
+import com.example.domain.entity.Repo
 import com.example.domain.entity.User
 import com.example.domain.repository.RepoRepository
 import com.omega_r.base.errors.ErrorHandler
@@ -22,6 +23,7 @@ class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSou
 
     private var allDateList = mutableListOf<RemoteStarredBody>()
     private var structureDateList = mutableListOf<DateStatistic>()
+    private var allRepoList = mutableListOf<Repo>()
     private var currentDate = Date()
     private var year: Int = currentDate.getDateYear()
     private var month = currentDate.getDateMonth()
@@ -34,6 +36,7 @@ class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSou
 
     override suspend fun getRepoList(userName: String, pageNumber: Int): RepoData {
         val repoList = getRepoRepositoryList(userName, pageNumber)
+        allRepoList.addAll(repoList)
         this.pageNumber = pageNumber
         queryCount += 1
         return RepoData(repoList, repoList.size)
@@ -49,46 +52,34 @@ class RepoRepositoryImpl(errorHandler: ErrorHandler, dataRepoSource: DataRepoSou
 
         Log.d("RepoDisplacement", displacement.toString())
 
-        val repoList = getRepoRepositoryList(userName, pageNumber)
-        repoList.forEachIndexed { index, repo ->
-            if(repo.name == repoName) pageCount = repoList[index].stargazers
+        allRepoList.forEachIndexed { index, repo ->
+            if(repo.name == repoName) pageCount = allRepoList[index].stargazers
         }
 
         if (pageCount % 100 != 0) {
             pageCount = pageCount / 100 + 1
         } else pageCount /= 100
 
-
-        if (allDateList.size != 0) {
-            Log.d("yearRepoRep", year.toString())
-            Log.d("displacementRepoRep", displacement.toString())
-            if (allDateList.first().starredAt.getDateYear() < year + 1) {
-                println("nothing")
-            } else {
-                while (allDateList.first().starredAt.getDateYear() <= year + 1) {
-                    if (pageCount != 0) {
-                        pageCount -= 1
-                        if (queryCount < 60) {
-                            val starred = getStarredList(userName, repoName, pageCount)
-                            allDateList.addAll(starred)
-                            Log.d("pageCountWhile", pageCount.toString())
-                            queryCount += 1
-                        }
-                    }
-                }
+        if (allDateList.size == 0) {
+            val starredList = getStarredList(userName, repoName, pageNumber)
+            allDateList.addAll(starredList)
+            if (displacement > 100) {
+                year = displacement
+            }
+            while (allDateList.first().starredAt.getDateYear() >= year && pageNumber > 0) {
+                pageNumber -= 1
+                val starred = getStarredList(userName, repoName, pageNumber)
+                allDateList.addAll(starred)
             }
         } else {
-            val starredList = getStarredList(userName, repoName, pageCount)
-            allDateList.addAll(starredList)
-            Log.d("allDateListFirst", allDateList.first().starredAt.getDateYear().toString())
-            while (allDateList.first().starredAt.getDateYear() <= year + 1) {
-                if (pageCount != 0) {
-                    pageCount -= 1
-                    if (queryCount < 60){
-                        val starred = getStarredList(userName, repoName, pageCount)
-                        allDateList.addAll(starred)
-                        queryCount += 1
-                    }
+            if (displacement > 100) {
+                year = displacement
+            }
+            if (allDateList.first().starredAt.getDateYear() >= year) {
+                while (allDateList.first().starredAt.getDateYear() >= year && pageNumber > 0) {
+                    pageNumber -= 1
+                    val starred = getStarredList(userName, repoName, pageNumber)
+                    allDateList.addAll(starred)
                 }
             }
         }

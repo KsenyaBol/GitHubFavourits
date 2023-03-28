@@ -6,7 +6,6 @@ import com.example.data.repository.RepoRepositoryImpl
 import com.example.data.source.RemoteRepoSource
 import com.example.domain.di.Injector
 import com.example.domain.repository.RepoRepository
-import com.omega_r.base.errors.ErrorHandler
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.ToJson

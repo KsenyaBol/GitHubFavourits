@@ -53,21 +53,12 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
             val nameRepo = repo.name
 
 
-//            displacement = when(direction) {
-//                RepoRepository.Period.YEAR -> year
-//                RepoRepository.Period.MONTH -> month
-//                RepoRepository.Period.WEEK -> day
-//            }
+            displacement = when(direction) {
+                RepoRepository.Period.YEAR -> year
+                RepoRepository.Period.MONTH -> month
+                RepoRepository.Period.WEEK -> day
+            }
 
-            if (direction == RepoRepository.Period.YEAR) {
-                displacement = year
-            }
-            if (direction == RepoRepository.Period.MONTH) {
-                displacement = month
-            }
-            if (direction == RepoRepository.Period.WEEK) {
-                displacement = day
-            }
             Log.d("displacement", displacement.toString())
 
             val starredAtList = repoRepository.getStatisticList(direction, displacement, nameUser, nameRepo)
@@ -97,13 +88,13 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
         }
 
         if (direction == RepoRepository.Period.MONTH) {
-            val monthNow = Calendar.MONTH
-            val yearNow = Calendar.YEAR
+            val monthNow = currentDate.getDateMonth()
+            val yearNow = currentDate.getDateYear()
             if (month == 1) {
                 month = 13
                 year -= 1
             }
-            if (month > monthNow || year > yearNow) {
+            if (month < monthNow || year < yearNow) {
                 month -= 1
             }
 
@@ -136,8 +127,8 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
     fun onNextClicked() {
 
         if (direction == RepoRepository.Period.YEAR) {
-            val yearNow = Calendar.YEAR
-            if (year >= yearNow) {
+            val yearNow = currentDate.getDateYear()
+            if (year < yearNow) {
                 year += 1
             }
 
@@ -145,12 +136,12 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
 
         if (direction == RepoRepository.Period.MONTH) {
             val monthNow = Calendar.MONTH
-            val yearNow = Calendar.YEAR
+            val yearNow = currentDate.getDateYear()
             if (month == 12) {
                 month = 0
                 year += 1
             }
-            if (month > monthNow || year > yearNow) {
+            if (month < monthNow || year < yearNow) {
                 month += 1
             }
 
@@ -159,7 +150,7 @@ class StatisticPresenter(private val nameUser: String, private val repo: Repo) :
         if (direction == RepoRepository.Period.WEEK) {
             val dayNow = Calendar.DAY_OF_MONTH
             val monthNow = Calendar.MONTH
-            val yearNow = Calendar.YEAR
+            val yearNow = currentDate.getDateYear()
             if (day >= 24) {
                 if (month == 12) {
                     month = 0
